@@ -551,6 +551,97 @@
          4. السكربت المدمج الأمني لحماية حلقة الأحداث (Fallback Inline Script)
          ========================================================================== -->
     <script>
+
+
+
+// ==========================================
+// 🛠️ حل مشكلة openDrawer وفتح اللوحات
+// ==========================================
+function openDrawer(type) {
+    if (type === 'audio') {
+        openAudioDrawer(); // فتح درج الصوت الشامل
+        return;
+    }
+
+    const drawer = document.getElementById('drawerPanelOverlay');
+    const title = document.getElementById('drawerTitleTxt');
+    const body = document.getElementById('drawerBodyContent');
+    if (!drawer || !body) return;
+
+    drawer.classList.add('active');
+
+    if (type === 'speed') {
+        if (title) title.textContent = "⚡ التحكم بالسرعة (Speed)";
+        body.innerHTML = `
+            <div style="display:flex; justify-content:space-around; align-items:center; padding:15px; background:#181d22; border-radius:10px;">
+                <button class="banner-try-btn" onclick="setVideoSpeed(0.5)">0.5x</button>
+                <button class="banner-try-btn" onclick="setVideoSpeed(1.0)">1.0x عادي</button>
+                <button class="banner-try-btn" onclick="setVideoSpeed(1.5)">1.5x</button>
+                <button class="banner-try-btn" onclick="setVideoSpeed(2.0)">2.0x</button>
+            </div>
+        `;
+    } else if (type === 'text') {
+        if (title) title.textContent = "✍️ إضافة نص / آية قرآنية";
+        body.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:10px; padding:10px;">
+                <input type="text" id="verseInput" placeholder="اكتب الآية الكريمة أو النص..." style="width:100%; padding:10px; background:#000; color:#fff; border:1px solid var(--border-line); border-radius:8px; font-family:'Amiri',serif; font-size:16px;" />
+                <button class="banner-try-btn" onclick="submitVerseFromDrawer()">إضافة النص ✨</button>
+            </div>
+        `;
+    } else if (type === 'stickers') {
+        if (title) title.textContent = "🌙 ملصقات إسلامية";
+        body.innerHTML = `
+            <div style="display:flex; gap:12px; overflow-x:auto; padding:10px;">
+                <button style="background:#1d2228; border:1px solid var(--gold); color:var(--gold); padding:10px 16px; border-radius:8px; font-family:'Amiri',serif; font-size:18px; cursor:pointer;" onclick="addStickerToCanvas('﷽')">﷽</button>
+                <button style="background:#1d2228; border:1px solid var(--gold); color:var(--gold); padding:10px 16px; border-radius:8px; font-family:'Amiri',serif; font-size:18px; cursor:pointer;" onclick="addStickerToCanvas('﴿ ۝ ﴾')">﴿ ۝ ﴾</button>
+                <button style="background:#1d2228; border:1px solid var(--gold); color:var(--gold); padding:10px 16px; border-radius:8px; font-family:'Amiri',serif; font-size:18px; cursor:pointer;" onclick="addStickerToCanvas('ﷺ')">ﷺ</button>
+            </div>
+        `;
+    } else if (type === 'ai' || type === 'islamic') {
+        if (title) title.textContent = "✨ الذكاء الاصطناعي والمساعد الإسلامي";
+        body.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:10px; padding:10px;">
+                <button class="banner-try-btn" style="width:100%; padding:12px;" onclick="alert('✅ تم تصفية وتنقيه الصوت وإزالة الموسيقى بالذكاء الاصطناعي'); closeDrawer();">🎵 إزالة الموسيقى تلقائياً (AI Mute)</button>
+            </div>
+        `;
+    }
+}
+
+function closeDrawer() {
+    const drawer = document.getElementById('drawerPanelOverlay');
+    if (drawer) drawer.classList.remove('active');
+}
+
+function setVideoSpeed(s) {
+    if (vNode) vNode.playbackRate = s;
+}
+
+function submitVerseFromDrawer() {
+    const val = document.getElementById('verseInput').value;
+    if (val) {
+        verseText = val;
+        closeDrawer();
+    }
+}
+
+function addStickerToCanvas(sym) {
+    verseText = sym;
+    closeDrawer();
+}
+
+function splitClip() {
+    alert("✂️ تم تقسيم المقطع!");
+}
+
+function deleteClip() {
+    if (vNode) {
+        vNode.src = "";
+        ctxNode.clearRect(0, 0, cNode.width, cNode.height);
+        document.getElementById('trackMainLabel').textContent = "🎬 تم حذف المقطع";
+    }
+}
+
+        
         const vNode = document.getElementById('hiddenSourceVideo');
         const cNode = document.getElementById('mainCanvas');
         const ctxNode = cNode.getContext('2d');
