@@ -104,15 +104,93 @@
     }
 
     /* 🎞️ 4. منطقة التايم لاين المطور المريح */
-    .timeline-wrapper { 
-        height: 160px; 
-        background: #15191e; 
-        border-top: 1px solid var(--border-line); 
-        position: relative; 
-        display: flex; 
-        flex-direction: column; 
-        flex-shrink: 0;
-    }
+   /* 🎞️ التايم لاين الاحترافي الممتد بعرض الشاشة (InShot/CapCut Wide Track) */
+.timeline-wrapper {
+    height: 180px;
+    background: #0d0f12;
+    border-top: 1px solid #22272c;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* شريط الثواني والمسطرة العليا (Time Ruler) */
+.timeline-ruler-bar {
+    height: 22px;
+    background: #12161a;
+    border-bottom: 1px solid #1a2026;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-family: monospace;
+    font-size: 10px;
+    color: #666;
+    white-space: nowrap;
+}
+
+/* تراك الفيديوهات الرئيسي الممتد أفقيًا */
+.timeline-main-track {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px;
+    min-width: 100%;
+    height: 70px;
+    background: #14181c;
+}
+
+/* كليب الفيديو المفرود المشاهد (Pro Video Clip Block) */
+.clip-item-block {
+    height: 60px;
+    min-width: 220px; /* عرض كبير مفرود */
+    background: #1b262c;
+    border: 1px solid #2a9d8f;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+/* هيدر الكليب الأخضر (اسم الملف + التوقيت) */
+.track-clip-title-bar {
+    height: 18px;
+    background: rgba(42, 157, 143, 0.85);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* شريط الفريمات المفرود بالكامل */
+.filmstrip-holder {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+}
+
+.filmstrip-frame {
+    height: 100%;
+    flex: 1;
+    object-fit: cover;
+    border-right: 1px solid rgba(0,0,0,0.3);
+}
+
+/* Waveform الموجات الصوتية تحت الكليب */
+.clip-audio-waveform {
+    height: 12px;
+    background: repeating-linear-gradient(90deg, #2a9d8f, #2a9d8f 2px, transparent 2px, transparent 4px);
+    opacity: 0.6;
+}
     .playhead-center { 
         position: absolute; 
         left: 50%; 
