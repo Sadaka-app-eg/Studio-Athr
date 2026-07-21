@@ -47,9 +47,9 @@
             overflow: hidden;
         }
 
-        #mainCanvas { max-width: 100%; max-height: 100%; object-fit: contain; }
+        #mainCanvas { max-width: 100%; max-height: 100%; object-fit: contain; background: #000; }
 
-        /* 🎛️ 3. شريط التشغيل والـ Keyframe */
+        /* 🎛️ 3. شريط التشغيل */
         .player-bar {
             height: 38px;
             background: var(--bg-app);
@@ -75,7 +75,6 @@
             flex-shrink: 0;
         }
 
-        /* خط المنتصف الأبيض */
         .playhead {
             position: absolute;
             left: 50%;
@@ -93,7 +92,6 @@
             clip-path: polygon(0 0, 100% 0, 50% 100%);
         }
 
-        /* التراكات */
         .tracks-scroll {
             flex: 1;
             overflow-x: auto;
@@ -131,7 +129,6 @@
             white-space: nowrap;
         }
 
-        /* زر الإضافة الوردي العائم */
         .floating-add {
             position: absolute;
             left: 12px;
@@ -174,7 +171,6 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* اللوحة الفرعية المنبثقة (Overlay فوق الشريط) */
         .drawer-overlay {
             display: none;
             position: absolute;
@@ -218,31 +214,31 @@
 </head>
 <body>
 
-    <!-- 🟢 1. الشريط العلوي Header -->
+    <!-- 🟢 1. الهيدر العلوي -->
     <header class="app-header">
         <button class="icon-btn" onclick="location.reload()">✕</button>
         <div class="header-title">
             <span>📖</span> <span>استوديو أثر</span>
         </div>
-        <button class="export-btn" onclick="window.triggerExport()">تصدير</button>
+        <button class="export-btn" onclick="window.athrExport.startExport()">تصدير</button>
     </header>
 
     <!-- 📺 2. كادر العرض -->
     <main class="preview-stage">
         <canvas id="mainCanvas" width="720" height="1280"></canvas>
-        <video id="hiddenVideo" style="display:none;" crossorigin="anonymous"></video>
+        <video id="hiddenVideo" style="display:none;" crossorigin="anonymous" playsinline></video>
     </main>
 
     <!-- 🎛️ 3. شريط التحكم اللحظي -->
     <div class="player-bar">
         <div class="controls-group">
-            <button class="icon-btn" onclick="alert('تراجع')">↩️</button>
-            <button class="icon-btn" onclick="alert('تقدم')">↪️</button>
+            <button class="icon-btn" onclick="window.athrEngine.undo()">↩️</button>
+            <button class="icon-btn" onclick="window.athrEngine.redo()">↪️</button>
         </div>
-        <span class="play-btn" id="playBtn" onclick="window.togglePlay()">▶</span>
+        <span class="play-btn" id="playBtn" onclick="window.athrEngine.togglePlay()">▶</span>
         <div class="controls-group">
-            <button class="icon-btn" onclick="alert('إضافة كي فريم')">♦️<sup>+</sup></button>
-            <button class="icon-btn" onclick="alert('تم الحفظ')">✓</button>
+            <button class="icon-btn" onclick="window.athrEngine.addKeyframeAtCurrentTime()">♦️<sup>+</sup></button>
+            <button class="icon-btn" onclick="window.closeDrawer()">✓</button>
         </div>
     </div>
 
@@ -251,7 +247,7 @@
         <div class="playhead"></div>
         <button class="floating-add" onclick="document.getElementById('mediaInput').click()">+</button>
 
-        <div class="tracks-scroll">
+        <div class="tracks-scroll" id="tracksContainer">
             <div>
                 <div class="track-badge">الرئيسي 🎛️</div>
                 <div class="track-strip" id="videoTrackStrip">
@@ -292,10 +288,10 @@
             <button class="tool-btn" onclick="window.openDrawer('filters')">
                 <span class="icon">🎨</span><span>فلتر</span>
             </button>
-            <button class="tool-btn" onclick="alert('تقسيم المقطع')">
+            <button class="tool-btn" onclick="window.athrEngine.splitCurrentClip()">
                 <span class="icon">✂️</span><span>تقسيم</span>
             </button>
-            <button class="tool-btn" onclick="alert('حذف المقطع')">
+            <button class="tool-btn" onclick="window.athrEngine.deleteSelectedClip()">
                 <span class="icon">🗑️</span><span>حذف</span>
             </button>
             <button class="tool-btn" onclick="window.openDrawer('stickers')">
@@ -306,39 +302,21 @@
 
     <input type="file" id="mediaInput" accept="video/*,image/*" style="display:none;" onchange="window.handleUpload(event)" />
 
+    <!-- تحميل المحرك الحقيقي المكتمل -->
+    <script src="js/engine.js"></script>
+    <script src="js/islamic-assistant.js"></script>
+    <script src="js/export-engine.js"></script>
+    
     <script>
-        const v = document.getElementById('hiddenVideo');
-        const canvas = document.getElementById('mainCanvas');
-        const ctx = canvas.getContext('2d');
+        document.addEventListener('DOMContentLoaded', () => {
+            window.athrEngine.init('mainCanvas', 'hiddenVideo');
+        });
 
         function handleUpload(e) {
             const file = e.target.files[0];
-            if (!file) return;
-            v.src = URL.createObjectURL(file);
-            v.onloadeddata = () => {
-                document.getElementById('videoTrackStrip').innerHTML = `🎬 ${file.name}`;
-                document.getElementById('durTime').textContent = v.duration.toFixed(1) + 's';
-                render();
-            };
-        }
-
-        function togglePlay() {
-            if (!v.src) return alert("اختر فيديو أولاً!");
-            if (v.paused) {
-                v.play();
-                document.getElementById('playBtn').textContent = '⏸';
-            } else {
-                v.pause();
-                document.getElementById('playBtn').textContent = '▶';
+            if (file) {
+                window.athrEngine.loadMediaFile(file);
             }
-        }
-
-        function render() {
-            if (v.src) {
-                ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
-                document.getElementById('curTime').textContent = v.currentTime.toFixed(1) + 's';
-            }
-            requestAnimationFrame(render);
         }
 
         function openDrawer(type) {
@@ -348,14 +326,38 @@
             overlay.classList.add('active');
 
             if (type === 'ai') {
-                title.textContent = "✨ المساعد الإسلامي (AI)";
-                body.innerHTML = `<button onclick="alert('جاري إزالة الموسيقى وتصفية الصوت...')" style="width:100%; background:linear-gradient(135deg, #0d3b2e, #1b5e20); color:#fff; border:1px solid var(--gold); padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">🎵 إزالة الموسيقى بضغطة واحدة</button>`;
+                title.textContent = "✨ المساعد الإسلامي (إزالة الموسيقى بالذكاء الاصطناعي)";
+                body.innerHTML = `
+                    <button onclick="window.athrIslamic.removeMusic()" style="width:100%; background:linear-gradient(135deg, #0d3b2e, #1b5e20); color:#fff; border:1px solid var(--gold); padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">
+                        🎵 إزالة الموسيقى والآلات وتصفية صوت القارئ/المتحدث
+                    </button>
+                    <div id="aiProgressLog" style="color:var(--gold); font-size:11px; margin-top:6px; text-align:center;"></div>
+                `;
             } else if (type === 'text') {
-                title.textContent = "✍️ إضافة آية قرآنية";
-                body.innerHTML = `<div style="display:flex; gap:6px;"><input type="text" placeholder="اكتب النص هنا..." style="flex:1; padding:6px; background:#000; color:#fff; border:1px solid var(--border); border-radius:6px;" /><button style="background:var(--gold); color:#000; border:none; padding:6px 12px; border-radius:6px; font-weight:bold;">إضافة</button></div>`;
+                title.textContent = "✍️ إضافة آية قرآنية / نص موقوت";
+                body.innerHTML = `
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <input type="text" id="verseTextInput" placeholder="اكتب الآية الكريمة..." style="width:100%; padding:6px; background:#000; color:#fff; border:1px solid var(--border); border-radius:6px; font-family:'Amiri',serif;" />
+                        <div style="display:flex; gap:6px;">
+                            <input type="number" id="vStart" placeholder="من (ثانية)" style="width:50%; padding:4px; background:#000; color:#fff; border:1px solid var(--border); border-radius:4px;" />
+                            <input type="number" id="vEnd" placeholder="إلى (ثانية)" style="width:50%; padding:4px; background:#000; color:#fff; border:1px solid var(--border); border-radius:4px;" />
+                        </div>
+                        <button onclick="window.addVerseFromDrawer()" style="background:var(--gold); color:#000; border:none; padding:6px; border-radius:6px; font-weight:bold; cursor:pointer;">➕ إضافة للنص الموقوت</button>
+                    </div>
+                `;
+            } else if (type === 'stickers') {
+                title.textContent = "🕌 ملصقات إسلامية سريعة";
+                body.innerHTML = `
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button onclick="window.athrEngine.addSticker('﷽')" style="background:#222; color:var(--gold); border:1px solid var(--gold); padding:6px 12px; border-radius:6px; font-family:'Amiri',serif; cursor:pointer;">﷽</button>
+                        <button onclick="window.athrEngine.addSticker('ﷺ')" style="background:#222; color:var(--gold); border:1px solid var(--gold); padding:6px 12px; border-radius:6px; font-family:'Amiri',serif; cursor:pointer;">ﷺ</button>
+                        <button onclick="window.athrEngine.addSticker('🕌')" style="background:#222; color:#fff; border:1px solid var(--border); padding:6px 12px; border-radius:6px; cursor:pointer;">🕌</button>
+                        <button onclick="window.athrEngine.addSticker('✨')" style="background:#222; color:#fff; border:1px solid var(--border); padding:6px 12px; border-radius:6px; cursor:pointer;">✨</button>
+                    </div>
+                `;
             } else {
                 title.textContent = `أدوات (${type})`;
-                body.innerHTML = `<span style="color:var(--gold); font-size:11px;">قيد التحديث...</span>`;
+                body.innerHTML = `<span style="color:var(--gold); font-size:11px;">اختر مقطع فيديو للبدء بالتعديل عليه المباشر.</span>`;
             }
         }
 
@@ -363,7 +365,15 @@
             document.getElementById('drawerOverlay').classList.remove('active');
         }
 
-        function triggerExport() { alert("⚙️ جاري فتح نافذة التصدير الاحترافية..."); }
+        function addVerseFromDrawer() {
+            const text = document.getElementById('verseTextInput').value;
+            const start = parseFloat(document.getElementById('vStart').value) || 0;
+            const end = parseFloat(document.getElementById('vEnd').value) || (window.athrEngine.video ? window.athrEngine.video.duration : 10);
+            if (text) {
+                window.athrEngine.addTimedCaption(text, start, end);
+                closeDrawer();
+            }
+        }
     </script>
 </body>
 </html>
