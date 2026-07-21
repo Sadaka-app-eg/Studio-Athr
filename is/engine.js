@@ -93,7 +93,7 @@ class AthrCoreEngine {
     }
 
     /**
-     * 3. تحميل واستيراد وسائط وسلسلة فيديوهات
+     * 3. تحميل واستيراد وسائط وسلسلة فيديوهات ودعم الدمج متعدد المقاطع
      */
     loadMediaFile(file) {
         if (!file) return;
@@ -107,15 +107,21 @@ class AthrCoreEngine {
             this.videoSource.onloadeddata = () => {
                 this.duration = this.videoSource.duration || 10;
                 
-                // إضافة المقطع للتراك الرئيسي
+                // حساب وقت البداية بناءً على نهاية الكليب الساابق (إن وجد) للدمج
+                let calcStartTime = 0;
+                const existingClips = this.tracks.mainVideo.clips;
+                if (existingClips.length > 0) {
+                    calcStartTime = existingClips[existingClips.length - 1].endTime;
+                }
+
                 const newClip = {
                     id: 'clip_' + Date.now(),
                     name: file.name,
                     type: 'video',
                     src: fileUrl,
                     element: this.videoSource,
-                    startTime: 0,
-                    endTime: this.duration,
+                    startTime: calcStartTime,
+                    endTime: calcStartTime + this.duration,
                     mediaStart: 0,
                     x: 0,
                     y: 0,
@@ -127,10 +133,10 @@ class AthrCoreEngine {
                     filters: { brightness: 1, contrast: 1, saturate: 1 }
                 };
 
-                this.tracks.mainVideo.clips = [newClip];
+                this.tracks.mainVideo.clips.push(newClip);
                 this.selectedClipId = newClip.id;
 
-                // تحديث واجهة المضي والوقت
+                // تحديث واجهة التايم لاين وتوليد شريط المصغرات
                 this.updateTimelineUI();
                 this.saveHistoryState();
                 this.renderFrame();
@@ -139,14 +145,20 @@ class AthrCoreEngine {
             const img = new Image();
             img.src = fileUrl;
             img.onload = () => {
+                let calcStartTime = 0;
+                const existingClips = this.tracks.overlay.clips;
+                if (existingClips.length > 0) {
+                    calcStartTime = existingClips[existingClips.length - 1].endTime;
+                }
+
                 const newClip = {
                     id: 'clip_' + Date.now(),
                     name: file.name,
                     type: 'image',
                     src: fileUrl,
                     element: img,
-                    startTime: 0,
-                    endTime: 5.0, // افتراضي 5 ثواني
+                    startTime: calcStartTime,
+                    endTime: calcStartTime + 5.0, // افتراضي 5 ثواني
                     x: (this.canvas.width - img.width) / 2,
                     y: (this.canvas.height - img.height) / 2,
                     width: img.width,
@@ -566,7 +578,46 @@ class AthrCoreEngine {
     }
 
     /**
-     * 17. تحديث زمن وشكل التايم لاين
+     * 17. توليد شريط المصغرات السينمائية للتايم لاين (InShot Filmstrip Generator)
+     */
+    generateVideoFilmstrip(clip, containerEl) {
+        if (!containerEl || !clip || !clip.element) return;
+
+        const duration = clip.endTime - clip.startTime;
+        const numberOfThumbnails = Math.min(Math.max(Math.floor(duration * 1.5), 3), 15);
+
+        const stripHolder = document.createElement('div');
+        stripHolder.className = 'filmstrip-holder';
+        stripHolder.style.cssText = "display: flex; height: 100%; width: 100%; overflow: hidden; position: relative;";
+
+        // اسم الكليب العائم
+        const headerTitle = document.createElement('div');
+        headerTitle.className = 'track-clip-title-bar';
+        headerTitle.style.cssText = "font-size: 10px; font-weight: bold; color: #ffffff; background: rgba(0,0,0,0.6); padding: 2px 6px; position: absolute; top: 2px; left: 4px; z-index: 10; border-radius: 4px;";
+        headerTitle.innerHTML = `🎬 ${clip.name} • ${duration.toFixed(1)}s`;
+        stripHolder.appendChild(headerTitle);
+
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = 60;
+        tempCanvas.height = 40;
+
+        for (let i = 0; i < numberOfThumbnails; i++) {
+            const thumbImg = document.createElement('img');
+            thumbImg.className = 'filmstrip-frame';
+            thumbImg.style.cssText = "height: 100%; width: 50px; object-fit: cover; border-right: 1px solid rgba(0,0,0,0.3); opacity: 0.85;";
+
+            // رسم الفريم من الفيديو
+            tempCtx.drawImage(clip.element, 0, 0, tempCanvas.width, tempCanvas.height);
+            thumbImg.src = tempCanvas.toDataURL('image/jpeg', 0.5);
+            stripHolder.appendChild(thumbImg);
+        }
+
+        containerEl.appendChild(stripHolder);
+    }
+
+    /**
+     * 18. تحديث زمن وشكل التايم لاين والمصغرات
      */
     updateTimelineUI() {
         const trackMainContainer = document.getElementById('trackMainVideoClips');
@@ -574,11 +625,15 @@ class AthrCoreEngine {
 
         const mainClips = this.tracks.mainVideo.clips;
         if (mainClips.length > 0) {
-            trackMainContainer.innerHTML = mainClips.map(clip => `
-                <div class="clip-item-block" style="background:#152826; border:1px solid #2a9d8f; padding:6px 12px; border-radius:4px; font-size:10px; color:#fff;">
-                    🎬 ${clip.name} (${(clip.endTime - clip.startTime).toFixed(1)}s)
-                </div>
-            `).join('');
+            trackMainContainer.innerHTML = '';
+            mainClips.forEach(clip => {
+                const clipBlock = document.createElement('div');
+                clipBlock.className = 'clip-item-block';
+                clipBlock.style.cssText = "height: 52px; background: #181d22; border: 1px solid #2a9d8f; border-radius: 8px; position: relative; overflow: hidden; display: inline-flex; min-width: 150px; margin-right: 6px;";
+
+                this.generateVideoFilmstrip(clip, clipBlock);
+                trackMainContainer.appendChild(clipBlock);
+            });
         }
     }
 
