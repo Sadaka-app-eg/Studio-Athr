@@ -1,0 +1,997 @@
+/* ==========================================================================
+   🎬 STUDIO ATHR PRO - MASTER STYLESHEET (CSS)
+   Design System: CapCut / InShot Islamic Dark Edition
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. المتغيرات الهيكلية والألوان الرئيسية (CSS Variables)
+   -------------------------------------------------------------------------- */
+:root {
+    /* ألوان الخلفيات والأسطح */
+    --bg-app: #0d0f12;
+    --bg-darker: #050607;
+    --bg-panel: #14181c;
+    --bg-card: #1d2228;
+    --bg-hover: #262d35;
+    --bg-active: #2f3742;
+
+    /* الهوية البصرية (الذهبي - الأخضر الإسلامي - التركواز - الوردي) */
+    --gold-primary: #d4af37;
+    --gold-light: #f3e5ab;
+    --gold-dark: #997f22;
+    --gold-glow: rgba(212, 175, 55, 0.25);
+
+    --green-islamic: #0f382c;
+    --green-accent: #1b5e20;
+    --green-bright: #00e676;
+
+    --cyan-track: #2a9d8f;
+    --pink-accent: #e76f51;
+    --red-alert: #ff4d4d;
+
+    /* ألوان النصوص والحدود */
+    --text-main: #ffffff;
+    --text-muted: #8e9aaf;
+    --text-sub: #a0aec0;
+    --border-line: #262e35;
+    --border-highlight: rgba(212, 175, 55, 0.4);
+
+    /* أبعاد وانحناءات العناصر */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+
+    /* الظلال والانتقالات الحركية */
+    --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.4);
+    --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.8);
+    --transition-fast: all 0.15s ease-in-out;
+    --transition-normal: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. إعدادات التهيئة العامة والـ Reset
+   -------------------------------------------------------------------------- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-darker);
+    color: var(--text-main);
+    font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    direction: rtl;
+    text-align: right;
+    touch-action: manipulation;
+}
+
+/* شريط التمرير المخصص */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-line);
+    border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-primary);
+}
+
+/* --------------------------------------------------------------------------
+   3. هيكلية الشاشات الرئيسية (App Screens Routing)
+   -------------------------------------------------------------------------- */
+.app-screen {
+    display: none;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    background-color: var(--bg-app);
+    opacity: 0;
+    transform: scale(0.98);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.app-screen.active {
+    display: flex;
+    opacity: 1;
+    transform: scale(1);
+    z-index: 20;
+}
+
+/* --------------------------------------------------------------------------
+   4. الشاشة الرئيسية (Home Screen - InShot Style)
+   -------------------------------------------------------------------------- */
+#homeScreen {
+    background: radial-gradient(circle at top center, #1a2228 0%, #0d0f12 70%);
+    justify-content: space-between;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+
+.home-top-bar {
+    height: 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    background: rgba(13, 15, 18, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-line);
+}
+
+.brand-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand-icon {
+    font-size: 22px;
+}
+
+.brand-name {
+    font-family: 'Amiri', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold-primary);
+    letter-spacing: -0.5px;
+}
+
+.pro-badge {
+    background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+    color: #000;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.icon-btn-gold {
+    background: var(--bg-card);
+    border: 1px solid var(--border-line);
+    color: var(--gold-primary);
+    font-size: 18px;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.icon-btn-gold:active {
+    transform: scale(0.92);
+    border-color: var(--gold-primary);
+}
+
+.home-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* كارت ابدأ بالتصميم */
+.start-design-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-line);
+    border-radius: var(--radius-lg);
+    padding: 20px 16px;
+    box-shadow: var(--shadow-heavy);
+}
+
+.card-header-txt {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.action-buttons-grid {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.action-btn-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.circle-action-btn {
+    width: 68px;
+    height: 68px;
+    border-radius: var(--radius-full);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition-fast);
+}
+
+.circle-action-btn:active {
+    transform: scale(0.92);
+}
+
+.btn-video {
+    background: linear-gradient(135deg, #ff4081, #d81b60);
+}
+
+.btn-photo {
+    background: linear-gradient(135deg, #ff9100, #f57c00);
+}
+
+.btn-collage {
+    background: linear-gradient(135deg, #ffb300, #f57f17);
+}
+
+.circle-action-btn .btn-icon {
+    font-size: 28px;
+}
+
+.draft-count-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--gold-primary);
+    color: #000;
+    font-size: 10px;
+    font-weight: 800;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-panel);
+}
+
+.btn-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+/* بنر المساعد الإسلامي */
+.islamic-ai-banner {
+    background: linear-gradient(135deg, var(--green-islamic) 0%, #081c15 100%);
+    border: 1px solid var(--gold-primary);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(15, 56, 44, 0.4);
+}
+
+.banner-icon-bg {
+    font-size: 32px;
+    background: rgba(212, 175, 55, 0.15);
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.banner-text-details {
+    flex: 1;
+}
+
+.banner-title {
+    color: var(--gold-primary);
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+
+.banner-sub {
+    color: var(--text-sub);
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.banner-try-btn {
+    background: var(--gold-primary);
+    color: #000;
+    border: none;
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    font-weight: 800;
+    font-size: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   5. شاشة معرض الوسائط (Media Gallery Picker)
+   -------------------------------------------------------------------------- */
+.gallery-top-bar {
+    height: 52px;
+    background: var(--bg-app);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--border-line);
+}
+
+.gallery-nav-tabs {
+    display: flex;
+    gap: 16px;
+}
+
+.g-tab-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 700;
+    padding-bottom: 4px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.g-tab-btn.active {
+    color: var(--text-main);
+    border-bottom-color: var(--pink-accent);
+}
+
+.gallery-grid-container {
+    flex: 1;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    padding: 2px;
+    background: var(--bg-darker);
+}
+
+.gallery-upload-card {
+    aspect-ratio: 1;
+    background: var(--bg-card);
+    border: 2px dashed var(--border-line);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.gallery-upload-card:hover {
+    border-color: var(--gold-primary);
+    background: var(--bg-hover);
+}
+
+.up-icon {
+    font-size: 24px;
+}
+
+.up-txt {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   6. شاشة المحرر الرئيسي (CapCut / InShot Main Editor View)
+   -------------------------------------------------------------------------- */
+#editorScreen {
+    background-color: #000000;
+}
+
+.editor-top-bar {
+    height: 48px;
+    background: var(--bg-app);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--border-line);
+    z-index: 50;
+}
+
+.editor-project-title {
+    font-family: 'Amiri', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.edit-pencil {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+.export-gold-badge {
+    background: var(--gold-primary);
+    color: #000;
+    font-weight: 800;
+    border: none;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 10px var(--gold-glow);
+}
+
+/* مسرح المعاينة Canvas Viewport */
+.editor-viewport {
+    flex: 1;
+    position: relative;
+    background: #040506;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#mainCanvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    background: #000;
+    box-shadow: var(--shadow-heavy);
+}
+
+/* خطوط الشبكة الذكية */
+.smart-guides-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    display: none;
+}
+
+.guide-line {
+    position: absolute;
+    background: var(--gold-primary);
+    display: none;
+}
+
+.guide-v {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+}
+
+.guide-h {
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+}
+
+/* شريط التحكم والتشغيل (Player Bar) */
+.editor-player-bar {
+    height: 40px;
+    background: var(--bg-app);
+    border-top: 1px solid var(--border-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 40;
+}
+
+.player-left-group, .player-right-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.icon-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: var(--transition-fast);
+}
+
+.icon-action-btn:active {
+    opacity: 1;
+    color: var(--gold-primary);
+}
+
+.timecode-display {
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--gold-primary);
+    letter-spacing: 0.5px;
+}
+
+.main-play-btn {
+    background: none;
+    border: none;
+    color: var(--gold-primary);
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.plus-sign {
+    font-size: 10px;
+    color: var(--gold-primary);
+}
+
+/* --------------------------------------------------------------------------
+   7. التايم لاين الاحترافي (Multitrack Timeline Engine Styles)
+   -------------------------------------------------------------------------- */
+.editor-timeline-wrapper {
+    height: 160px;
+    background: var(--bg-panel);
+    border-top: 1px solid var(--border-line);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* خط المنتصف الأبيض الثابت */
+.playhead-line-center {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 22px;
+    width: 2px;
+    background: #ffffff;
+    z-index: 60;
+    pointer-events: none;
+    transform: translateX(-50%);
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+}
+
+.playhead-line-center::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -5px;
+    width: 12px;
+    height: 8px;
+    background: #ffffff;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* زر الإضافة الوردي العائم */
+.floating-add-media-btn {
+    position: absolute;
+    left: 14px;
+    bottom: 30px;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--pink-accent);
+    color: #ffffff;
+    border: none;
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 70;
+    box-shadow: 0 4px 15px rgba(231, 111, 81, 0.4);
+}
+
+.timeline-tracks-scroll-area {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 10px 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    scrollbar-width: none;
+}
+
+.timeline-tracks-scroll-area::-webkit-scrollbar {
+    display: none;
+}
+
+.timeline-track-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 240px;
+}
+
+.track-header-badge {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--text-sub);
+    padding: 2px 6px;
+    border-radius: 3px;
+    width: fit-content;
+    background: var(--bg-card);
+}
+
+.track-header-badge.main-bg {
+    background: var(--cyan-track);
+    color: #000;
+}
+
+.track-header-badge.audio-bg {
+    background: #6b46c1;
+    color: #fff;
+}
+
+.track-clips-container {
+    height: 42px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-line);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.empty-track-placeholder {
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.timeline-ruler-bar {
+    height: 22px;
+    background: var(--bg-darker);
+    border-top: 1px solid var(--border-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 14px;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: monospace;
+}
+
+/* --------------------------------------------------------------------------
+   8. الشريط السفلي والأدراج المنبثقة (Contextual Navigation & Drawers)
+   -------------------------------------------------------------------------- */
+.bottom-tools-navigation {
+    background: var(--bg-app);
+    border-top: 1px solid var(--border-line);
+    position: relative;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.drawer-panel-overlay {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-panel);
+    border-top: 1px solid var(--gold-primary);
+    padding: 14px;
+    z-index: 100;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.8);
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.drawer-panel-overlay.active {
+    display: block;
+    animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.drawer-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-line);
+}
+
+.drawer-title-txt {
+    color: var(--gold-primary);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.drawer-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.tools-horizontal-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 10px 14px;
+    scrollbar-width: none;
+}
+
+.tools-horizontal-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.tool-item-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--text-sub);
+    font-size: 10px;
+    font-family: 'Cairo', sans-serif;
+    cursor: pointer;
+    min-width: 52px;
+    flex-shrink: 0;
+    position: relative;
+    transition: var(--transition-fast);
+}
+
+.tool-item-btn .tool-icon {
+    font-size: 20px;
+    color: #ffffff;
+}
+
+.tool-item-btn:active, .tool-item-btn.active {
+    color: var(--gold-primary);
+}
+
+.tool-item-btn:active .tool-icon, .tool-item-btn.active .tool-icon {
+    color: var(--gold-primary);
+}
+
+.badge-gold-dot {
+    position: absolute;
+    top: -2px;
+    right: 14px;
+    width: 6px;
+    height: 6px;
+    background: var(--gold-primary);
+    border-radius: var(--radius-full);
+}
+
+/* --------------------------------------------------------------------------
+   9. النوافذ المنبثقة والمودالات (Modals & InShot Dialogs)
+   -------------------------------------------------------------------------- */
+.app-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+.app-modal-overlay.active {
+    display: flex;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* نافذة التصدير (Export Modal) */
+.export-dialog-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-line);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 360px;
+    padding: 20px;
+    box-shadow: var(--shadow-heavy);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.modal-top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-hdr-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.modal-x-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.export-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.export-option-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.opt-label {
+    font-size: 12px;
+    color: var(--text-sub);
+}
+
+.export-custom-select {
+    background: var(--bg-darker);
+    color: var(--gold-primary);
+    border: 1px solid var(--border-line);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Cairo', sans-serif;
+}
+
+.modal-divider {
+    border: none;
+    border-top: 1px solid var(--border-line);
+}
+
+.export-estimated-size-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-darker);
+    padding: 10px;
+    border-radius: var(--radius-sm);
+}
+
+.est-lbl {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.est-val {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--gold-primary);
+}
+
+.export-execute-btn {
+    background: var(--gold-primary);
+    color: #000;
+    border: none;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px var(--gold-glow);
+}
+
+.modal-cancel-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* نافذة المسودات (Drafts Modal) */
+.drafts-dialog-box {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 360px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-create-new-green {
+    background: var(--green-bright);
+    color: #000;
+    border: none;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.drafts-section-hdr {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.drafts-scroll-list {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   10. التوافقية والتجاوب مع جميع الشاشات (Responsive Breakpoints)
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    body {
+        max-width: 480px;
+        margin: 0 auto;
+        border-left: 1px solid var(--border-line);
+        border-right: 1px solid var(--border-line);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+    }
+}
+
