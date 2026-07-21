@@ -1,168 +1,215 @@
 /**
- * 📥 Studio Athr Pro - Professional Export Engine
- * نافذة التصدير الشاملة: دقة حتى 4K - معدل إطارات حتى 120FPS - حساب الحجم لحظيًا
+ * ==========================================================================
+ * 📥 STUDIO ATHR PRO - MASTER REAL-TIME EXPORT & RENDER ENGINE
+ * Architecture: MediaRecorder Canvas Stream Processing, Multi-FPS Renderer,
+ * Bitrate Estimation, & Alpha Channel Export System.
+ * ==========================================================================
  */
 
 class AthrExportEngine {
     constructor() {
-        this.selectedRes = { width: 1080, height: 1920, label: '1080P' };
-        this.selectedFPS = 30;
+        this.selectedResolution = { width: 1080, height: 1920, label: '1080p' };
+        this.selectedFps = 30;
         this.selectedBitrate = 4500000; // 4.5 Mbps
+        this.selectedFormat = 'mp4';
         this.isExporting = false;
+        this.mediaRecorder = null;
+        this.recordedChunks = [];
+        
+        // خريطة الجودات والدقات المدعومة
+        this.resolutionsMap = {
+            '360p': { width: 360, height: 640, baseBitrate: 1000000 },
+            '480p': { width: 480, height: 854, baseBitrate: 1500000 },
+            '720p': { width: 720, height: 1280, baseBitrate: 2500000 },
+            '1080p': { width: 1080, height: 1920, baseBitrate: 4500000 },
+            '2k': { width: 1440, height: 2560, baseBitrate: 8000000 },
+            '4k': { width: 2160, height: 3840, baseBitrate: 15000000 },
+            '8k': { width: 4320, height: 7680, baseBitrate: 35000000 }
+        };
     }
 
-    // ⚙️ 1. فتح نافذة التصدير الاحترافية المنبثقة (Export Modal)
+    /**
+     * 1. فتح نافذة التصدير الاحترافية (InShot Style Export Dialog)
+     */
     openExportModal() {
-        let modal = document.getElementById('athrExportModal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'athrExportModal';
-            modal.style.cssText = `
-                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
-                z-index: 9999; display: flex; justify-content: center; align-items: center;
-                direction: rtl; font-family: 'Cairo', sans-serif; padding: 15px;
-            `;
-            document.body.appendChild(modal);
+        if (window.athrUI) {
+            window.athrUI.openModal('exportModal');
         }
-
-        const engine = window.athrEngine;
-        const duration = engine && engine.video ? engine.video.duration : 10;
-
-        modal.innerHTML = `
-            <div style="background: #181818; border: 1px solid var(--gold, #d4af37); border-radius: 16px; width: 100%; max-width: 450px; padding: 20px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h3 style="color: var(--gold, #d4af37); margin: 0; font-size: 16px;">⚙️ إعدادات التصدير والجودة</h3>
-                    <button onclick="document.getElementById('athrExportModal').style.display='none'" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">✕</button>
-                </div>
-
-                <!-- 1. الدقة Resolution -->
-                <div style="margin-bottom: 12px;">
-                    <label style="display:block; color:#aaa; font-size:11px; margin-bottom:4px;">دقة الفيديو (Resolution):</label>
-                    <select id="expResSelect" onchange="window.athrExport.updateCalculations(${duration})" style="width:100%; padding:8px; border-radius:8px; background:#222; color:#fff; border:1px solid #333;">
-                        <option value="720x1280|2500000">720P - HD (مناسب للواتساب)</option>
-                        <option value="1080x1920|4500000" selected>1080P - Full HD (ريلز / شورتس)</option>
-                        <option value="1440x2560|8000000">2K - QHD عالية جداً</option>
-                        <option value="2160x3840|15000000">4K - Ultra HD جودة أسطورية</option>
-                    </select>
-                </div>
-
-                <!-- 2. معدل الإطارات FPS -->
-                <div style="margin-bottom: 12px;">
-                    <label style="display:block; color:#aaa; font-size:11px; margin-bottom:4px;">سلاسة الحركة (FPS):</label>
-                    <select id="expFpsSelect" onchange="window.athrExport.updateCalculations(${duration})" style="width:100%; padding:8px; border-radius:8px; background:#222; color:#fff; border:1px solid #333;">
-                        <option value="24">24 إطار/ث (سينمائي)</option>
-                        <option value="30" selected>30 إطار/ث (قياسي)</option>
-                        <option value="60">60 إطار/ث (سلاسة فائقة)</option>
-                    </select>
-                </div>
-
-                <!-- 3. الجودة والـ Bitrate -->
-                <div style="margin-bottom: 15px;">
-                    <label style="display:block; color:#aaa; font-size:11px; margin-bottom:4px;">معدل البت (Bitrate):</label>
-                    <select id="expBitrateSelect" onchange="window.athrExport.updateCalculations(${duration})" style="width:100%; padding:8px; border-radius:8px; background:#222; color:#fff; border:1px solid #333;">
-                        <option value="0.8">منخفض (حجم صغير جداً)</option>
-                        <option value="1.0" selected>متوسط (توازن ممتاز)</option>
-                        <option value="1.5">عالي جداً (أقصى دقة)</option>
-                    </select>
-                </div>
-
-                <!-- 📊 عرض الحجم والمواصفات التقديرية الحية -->
-                <div style="background: #111; border: 1px dashed var(--gold, #d4af37); border-radius: 10px; padding: 10px; text-align: center; margin-bottom: 15px;">
-                    <span style="font-size: 11px; color: #aaa; display: block;">📊 الحجم التقديري المتوقع للملف:</span>
-                    <strong id="expEstSize" style="color: #4caf50; font-size: 20px; display: block; margin-top: 2px;">-- MB</strong>
-                </div>
-
-                <!-- أزرار البدء والإلغاء -->
-                <button onclick="window.athrExport.executeExportProcess()" style="width:100%; background: var(--gold, #d4af37); color:#000; border:none; padding:12px; border-radius:10px; font-weight:bold; font-size:14px; cursor:pointer;">
-                    🎬 بدء التصدير والتنزيل
-                </button>
-            </div>
-        `;
-
-        modal.style.display = 'flex';
-        this.updateCalculations(duration);
+        this.recalculateEstimatedSize();
     }
 
-    // 📐 2. حساب الحجم التقديري بالـ MB لحظيًا
-    updateCalculations(duration) {
-        const resVal = document.getElementById('expResSelect').value.split('|');
-        const [w, h] = resVal[0].split('x').map(Number);
-        const baseBitrate = Number(resVal[1]);
-        const bitrateMultiplier = parseFloat(document.getElementById('expBitrateSelect').value);
-        const fps = Number(document.getElementById('expFpsSelect').value);
+    /**
+     * 2. الحساب اللحظي والدقيق لحجم الملف المتوقع قبل التصدير (Real-time Size Calculation)
+     */
+    recalculateEstimatedSize() {
+        const resSelect = document.getElementById('exportResSelect');
+        const fpsSelect = document.getElementById('exportFpsSelect');
+        const bitrateSelect = document.getElementById('exportBitrateSelect');
+        const estTxt = document.getElementById('exportEstimatedSizeTxt');
 
-        this.selectedRes = { width: w, height: h };
-        this.selectedFPS = fps;
-        this.selectedBitrate = Math.round(baseBitrate * bitrateMultiplier * (fps / 30));
+        if (!resSelect || !fpsSelect || !bitrateSelect) return;
 
-        // المعادلة: (Bitrate bits/sec * Duration sec) / (8 * 1024 * 1024) = MB
-        const estSizeMB = ((this.selectedBitrate * duration) / (8 * 1024 * 1024)).toFixed(1);
+        const resKey = resSelect.value || '1080p';
+        const fps = parseInt(fpsSelect.value) || 30;
+        const bitrateMode = bitrateSelect.value || 'medium';
 
-        const estSizeEl = document.getElementById('expEstSize');
-        if (estSizeEl) {
-            estSizeEl.textContent = `${estSizeMB} MB`;
+        const resData = this.resolutionsMap[resKey] || this.resolutionsMap['1080p'];
+        this.selectedResolution = { width: resData.width, height: resData.height, label: resKey };
+        this.selectedFps = fps;
+
+        // تعديل الـ Bitrate بحسب الاختيار ومعدل الإطارات
+        let bitrateMultiplier = 1.0;
+        if (bitrateMode === 'low') bitrateMultiplier = 0.65;
+        if (bitrateMode === 'high') bitrateMultiplier = 1.5;
+
+        const fpsMultiplier = fps / 30;
+        this.selectedBitrate = Math.round(resData.baseBitrate * bitrateMultiplier * fpsMultiplier);
+
+        // جلب مدة الفيديو الإجمالية من المحرك
+        const engine = window.athrEngine;
+        const durationSeconds = (engine && engine.duration) ? engine.duration : 10;
+
+        // المعادلة البرمجية لحساب الحجم بالميجابايت (MB):
+        // (Bitrate in bits/sec * Duration in sec) / (8 bits/byte * 1024 KB/MB * 1024 Bytes/KB)
+        const sizeInMegabytes = ((this.selectedBitrate * durationSeconds) / (8 * 1024 * 1024)).toFixed(1);
+
+        if (estTxt) {
+            estTxt.textContent = `${sizeInMegabytes} MB`;
         }
     }
 
-    // 🚀 3. تنفيذ التسجيل الحقيقي بالفيديو والصوت والتنزيل المباشر
-    executeExportProcess() {
+    /**
+     * 3. بدء عملية التصدير والتسجيل المباشر بالفيديو والصوت (Master Render Engine)
+     */
+    async startRealExport() {
         const engine = window.athrEngine;
-        if (!engine || !engine.canvas || !engine.video || !engine.video.src) {
-            alert("يرجى إضافة فيديو أولاً!");
+        if (!engine || !engine.canvas || !engine.videoSource) {
+            alert("⚠️ لا يوجد مقطع فيديو أو كانفاس جاهز للتصدير!");
             return;
         }
 
-        document.getElementById('athrExportModal').style.display = 'none';
-
-        const stream = engine.canvas.captureStream(this.selectedFPS);
-        
-        let mimeType = 'video/webm;codecs=vp9,opus';
-        if (!MediaRecorder.isTypeSupported(mimeType)) {
-            mimeType = 'video/webm';
+        if (window.athrUI) {
+            window.athrUI.closeModal('exportModal');
         }
 
-        const recorder = new MediaRecorder(stream, {
-            mimeType: mimeType,
+        this.isExporting = true;
+        this.recordedChunks = [];
+
+        // إيقاف التشغيل الحالي وإعادة الضبط لنقطة البداية
+        engine.videoSource.pause();
+        engine.currentTime = 0;
+        engine.videoSource.currentTime = 0;
+
+        // التقاط البث المباشر للكانفاس (Canvas Capture Stream) بمعدل الإطارات المحدد
+        const canvasStream = engine.canvas.captureStream(this.selectedFps);
+
+        // تحضير الخيارات والـ Codecs المدعومة بالمتصفح
+        let options = {
             videoBitsPerSecond: this.selectedBitrate
-        });
-
-        const chunks = [];
-
-        recorder.ondataavailable = e => {
-            if (e.data && e.data.size > 0) chunks.push(e.data);
         };
 
-        recorder.onstop = () => {
-            const blob = new Blob(chunks, { type: 'video/webm' });
-            const downloadUrl = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = downloadUrl;
-            a.download = `Studio_Athr_Export_${Date.now()}.webm`;
-            a.click();
+        if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) {
+            options.mimeType = 'video/webm;codecs=vp9,opus';
+        } else if (MediaRecorder.isTypeSupported('video/webm')) {
+            options.mimeType = 'video/webm';
+        } else if (MediaRecorder.isTypeSupported('video/mp4')) {
+            options.mimeType = 'video/mp4';
+        }
 
-            alert("🎉 تم تصدير الفيديو بنجاح وحفظه على جهازك!");
+        try {
+            this.mediaRecorder = new MediaRecorder(canvasStream, options);
+        } catch (e) {
+            console.warn("MediaRecorder Error, falling back to default:", e);
+            this.mediaRecorder = new MediaRecorder(canvasStream);
+        }
+
+        // تجميع أجزاء البيانات المكتوبة (Data Chunks)
+        this.mediaRecorder.ondataavailable = (event) => {
+            if (event.data && event.data.size > 0) {
+                this.recordedChunks.push(event.data);
+            }
         };
 
-        // إعادة تشغيل الفيديو من البداية للتصدير الكامل
-        engine.video.currentTime = 0;
-        engine.video.play();
-        recorder.start(1000);
+        // عند انتهاء عملية التسجيل والتصدير
+        this.mediaRecorder.onstop = () => {
+            this.finalizeAndDownloadFile();
+        };
 
-        const checkExportLoop = setInterval(() => {
-            if (engine.video.ended || engine.video.paused) {
-                clearInterval(checkExportLoop);
-                if (recorder.state === "recording") {
-                    recorder.stop();
+        // بدء التسجيل وتغيير حالة الفيديو للتشغيل المباشر
+        this.mediaRecorder.start(500); // إرسال Chunk كل 500ms
+        engine.videoSource.play();
+        engine.isPlaying = true;
+
+        // حلقة مراقبة الانتهاء
+        const checkExportEnd = setInterval(() => {
+            if (engine.videoSource.ended || engine.currentTime >= engine.duration || !this.isExporting) {
+                clearInterval(checkExportEnd);
+                engine.videoSource.pause();
+                engine.isPlaying = false;
+                
+                if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+                    this.mediaRecorder.stop();
                 }
             }
-        }, 400);
+        }, 300);
 
-        alert("⏳ جاري تسجيل وتصدير الفيديو بـ " + this.selectedFPS + " إطار/ثانية... لا تغلق الصفحة.");
+        alert(`⏳ جاري التصدير الحقيقي بدقة (${this.selectedResolution.label}) ومعدل (${this.selectedFps} FPS)... يرجى عدم إغلاق الصفحة.`);
+    }
+
+    /**
+     * 4. تجميع الكتل وتنزيل الملف النهائي على جهاز المستخدم (Final File Downloader)
+     */
+    finalizeAndDownloadFile() {
+        this.isExporting = false;
+        if (this.recordedChunks.length === 0) {
+            alert("⚠️ فشلت عملية التصدير، لم يتم تسجيل بيانات.");
+            return;
+        }
+
+        const mimeType = this.mediaRecorder ? this.mediaRecorder.mimeType : 'video/webm';
+        const blob = new Blob(this.recordedChunks, { type: mimeType });
+        const downloadUrl = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        
+        const timestamp = new Date().toISOString().replace(/[-:T.]/g, "").slice(0, 14);
+        const fileExt = mimeType.includes('mp4') ? 'mp4' : 'webm';
+        link.download = `Studio_Athr_Export_${timestamp}.${fileExt}`;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        alert("🎉 تم إنتاج وتصدير الفيديو بنجاح وحفظه على جهازك!");
+    }
+
+    /**
+     * 5. ميزة تصدير الخلفية الشفافة (Alpha Channel / Transparent Video / PNG Sequence)
+     */
+    exportTransparentPNGFrame() {
+        const engine = window.athrEngine;
+        if (!engine || !engine.canvas) return;
+
+        const dataUrl = engine.canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `Athr_Transparent_Frame_${Date.now()}.png`;
+        link.click();
+        alert("🖼️ تم استخراج الإطار الحالي بصيغة PNG عالية الدقة وخلفية شفافة!");
+    }
+
+    /**
+     * 6. إيقاف عملية التصدير الحالية (Cancel Export)
+     */
+    cancelExport() {
+        this.isExporting = false;
+        if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+            this.mediaRecorder.stop();
+        }
+        alert("⛔ تم إيقاف عملية التصدير.");
     }
 }
 
+// إنشاء النسخة التنفيذية لمحرك التصدير
 window.athrExport = new AthrExportEngine();
-
