@@ -1,0 +1,49 @@
+{
+  "name": "استوديو أثر - مونتاج إسلامي احترافي",
+  "short_name": "أثر Pro",
+  "description": "محرر فيديو احترافي مخصص للمحتوى الإسلامي ودعوي بدون موسيقى مع تقنيات الذكاء الاصطناعي",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d0f12",
+  "theme_color": "#d4af37",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "photo",
+    "video",
+    "productivity",
+    "utilities"
+  ],
+  "shortcuts": [
+    {
+      "name": "مشروع جديد",
+      "short_name": "جديد",
+      "description": "ابدأ مونتاج فيديو جديد فوراً",
+      "url": "./index.html?action=new",
+      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "المساعد الإسلامي",
+      "short_name": "عزل الموسيقى",
+      "description": "عزل الصوت وإزالة الموسيقى بالذكاء الاصطناعي",
+      "url": "./index.html?action=ai_remove_music",
+      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
+
