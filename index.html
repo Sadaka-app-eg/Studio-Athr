@@ -2,479 +2,368 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>استوديو أثر - Studio Athr Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-app: #121212;
-            --bg-dark: #0a0a0a;
-            --bg-panel: #181818;
-            --bg-track: #222222;
+            --bg-panel: #1a1a1a;
+            --bg-card: #222222;
             --gold: #d4af37;
-            --cyan-track: #38b2ac;
-            --pink-accent: #ff2d55;
-            --text-main: #ffffff;
-            --text-sub: #a0a0a0;
-            --border-line: #2a2a2a;
+            --cyan: #38b2ac;
+            --pink: #ff2d55;
+            --border: #2a2a2a;
+            --text-muted: #888888;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Cairo', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; color: #fff; font-family: 'Cairo', sans-serif; display: flex; flex-direction: column; }
 
-        /* 🟢 1. الهيدر العلوي القياسي */
+        /* 🟢 1. الهيدر العلوي */
         .app-header {
-            height: 48px;
+            height: 46px;
             background: var(--bg-app);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 14px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .header-title { font-family: 'Amiri', serif; font-size: 16px; color: var(--gold); display: flex; align-items: center; gap: 6px; }
+        .export-btn { background: var(--gold); color: #000; font-weight: 800; border: none; padding: 5px 16px; border-radius: 16px; font-size: 12px; cursor: pointer; }
+        .icon-btn { background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; }
+
+        /* 📺 2. كادر الشاشة والمعاينة */
+        .preview-stage {
+            flex: 1;
+            position: relative;
+            background: #050505;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #mainCanvas { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        /* 🎛️ 3. شريط التشغيل والـ Keyframe */
+        .player-bar {
+            height: 38px;
+            background: var(--bg-app);
+            border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0 16px;
-            border-bottom: 1px solid var(--border-line);
-            z-index: 100;
+            flex-shrink: 0;
         }
 
-        .header-btn { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; }
-        .export-badge {
-            background: var(--gold);
-            color: #000;
-            font-weight: 800;
-            padding: 5px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.25);
-        }
+        .controls-group { display: flex; align-items: center; gap: 16px; }
+        .play-btn { font-size: 20px; color: #fff; cursor: pointer; }
 
-        /* 📺 2. كادر عرض الفيديو المعاين */
-        .preview-stage {
-            flex: 1;
-            position: relative;
-            background: #000000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        #mainCanvas {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            box-shadow: 0 0 20px rgba(0,0,0,0.9);
-        }
-
-        /* 🎛️ 3. شريط أزرار التحكم بالتشغيل والـ Keyframe */
-        .player-bar {
-            height: 42px;
-            background: var(--bg-app);
-            border-top: 1px solid var(--border-line);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 12px;
-            color: var(--text-sub);
-        }
-
-        .player-controls { display: flex; align-items: center; gap: 24px; }
-        .action-icon { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; opacity: 0.85; }
-        .action-icon:active { opacity: 1; color: var(--gold); }
-        .play-btn { font-size: 22px; color: #fff; }
-
-        /* 🎞️ 4. منطقة التايم لاين المطور المدمج CapCut Style */
-        .timeline-area {
-            height: 190px;
+        /* 🎞️ 4. منطقة التايم لاين */
+        .timeline-container {
+            height: 140px;
             background: var(--bg-panel);
-            border-top: 1px solid var(--border-line);
+            border-top: 1px solid var(--border);
             position: relative;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            flex-shrink: 0;
         }
 
-        /* خط مؤشر المنتصف الأبيض الثابت */
-        .playhead-center {
+        /* خط المنتصف الأبيض */
+        .playhead {
             position: absolute;
             left: 50%;
             top: 0;
-            bottom: 24px;
+            bottom: 20px;
             width: 2px;
             background: #ffffff;
-            z-index: 80;
+            z-index: 10;
             pointer-events: none;
-            box-shadow: 0 0 4px rgba(255,255,255,0.8);
+            transform: translateX(-50%);
         }
-        .playhead-center::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -5px;
-            width: 12px;
-            height: 8px;
-            background: #ffffff;
+        .playhead::before {
+            content: ''; position: absolute; top: 0; left: -4px;
+            width: 10px; height: 7px; background: #fff;
             clip-path: polygon(0 0, 100% 0, 50% 100%);
         }
 
-        /* مسارات التايم لاين القابلة للسحب الأفقي */
-        .timeline-tracks-scroll {
+        /* التراكات */
+        .tracks-scroll {
             flex: 1;
             overflow-x: auto;
-            overflow-y: hidden;
-            position: relative;
-            padding: 15px 50% 10px 50%;
+            padding: 12px 50%;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             scrollbar-width: none;
         }
-        .timeline-tracks-scroll::-webkit-scrollbar { display: none; }
+        .tracks-scroll::-webkit-scrollbar { display: none; }
 
-        /* تراك الفيديو الرئيسي الأخضر/التركواز */
-        .main-track-label {
-            background: var(--cyan-track);
+        .track-badge {
+            background: var(--cyan);
             color: #000;
+            font-size: 9px;
             font-weight: bold;
-            font-size: 10px;
-            padding: 3px 10px;
-            border-radius: 4px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+            padding: 2px 6px;
+            border-radius: 3px;
             width: fit-content;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
-        .track-thumbnails-strip {
-            height: 50px;
-            background: #2a3a38;
-            border: 1px solid var(--cyan-track);
+        .track-strip {
+            height: 44px;
+            background: #223330;
+            border: 1px solid var(--cyan);
             border-radius: 6px;
             display: flex;
-            overflow: hidden;
-            min-width: 200px;
-            position: relative;
-        }
-
-        .thumb-img {
-            height: 100%;
-            width: 50px;
-            object-fit: cover;
-            border-right: 1px solid rgba(0,0,0,0.3);
-        }
-
-        /* تراك الصوت والمؤثرات */
-        .audio-track-strip {
-            height: 32px;
-            background: #232238;
-            border: 1px dashed #6b46c1;
-            border-radius: 4px;
-            display: flex;
             align-items: center;
-            padding: 0 8px;
+            justify-content: center;
+            min-width: 220px;
+            padding: 0 10px;
             font-size: 10px;
-            color: #d6bcfa;
+            color: #a0aec0;
             white-space: nowrap;
         }
 
-        /* زر الإضافة الوردي العائم فوق التايم لاين */
-        .floating-add-btn {
+        /* زر الإضافة الوردي العائم */
+        .floating-add {
             position: absolute;
-            left: 15px;
-            bottom: 35px;
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-            background: var(--pink-accent);
+            left: 12px;
+            bottom: 26px;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: var(--pink);
             color: #fff;
             border: none;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(255, 45, 85, 0.4);
-            z-index: 90;
+            z-index: 20;
+            box-shadow: 0 2px 8px rgba(255, 45, 85, 0.4);
         }
 
-        /* مسطرة التوقيت السفلي */
-        .timeline-ruler {
-            height: 24px;
+        .time-ruler {
+            height: 20px;
             background: #111;
-            border-top: 1px solid var(--border-line);
+            border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 15px;
-            font-size: 10px;
-            color: var(--text-sub);
+            padding: 0 12px;
+            font-size: 9px;
+            color: var(--text-muted);
             font-family: monospace;
         }
 
-        /* 🛠️ 5. شريط الأدوات السفلية والقوائم الفرعية */
-        .bottom-toolbar-container {
+        /* 🛠️ 5. شريط القوائم السفلية */
+        .bottom-nav {
             background: var(--bg-app);
-            border-top: 1px solid var(--border-line);
+            border-top: 1px solid var(--border);
             position: relative;
+            flex-shrink: 0;
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* اللوحة الفرعية المنبثقة عند اختيار أداة */
-        .sub-tool-drawer {
+        /* اللوحة الفرعية المنبثقة (Overlay فوق الشريط) */
+        .drawer-overlay {
             display: none;
-            background: #161616;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border-line);
-            max-height: 130px;
-            overflow-y: auto;
-            font-size: 12px;
+            position: absolute;
+            bottom: 100%;
+            left: 0; right: 0;
+            background: #181818;
+            border-top: 1px solid var(--border);
+            padding: 12px 14px;
+            z-index: 100;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
         }
-        .sub-tool-drawer.active { display: block; }
+        .drawer-overlay.active { display: block; }
 
-        /* قائمة الأيقونات الملساء */
-        .tools-horizontal-scroll {
+        .tools-scroll {
             display: flex;
-            gap: 18px;
+            gap: 12px;
             overflow-x: auto;
-            padding: 10px 16px;
+            padding: 8px 12px;
             scrollbar-width: none;
         }
-        .tools-horizontal-scroll::-webkit-scrollbar { display: none; }
+        .tools-scroll::-webkit-scrollbar { display: none; }
 
-        .tool-icon-btn {
+        .tool-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             background: none;
             border: none;
-            color: var(--text-sub);
+            color: #ccc;
             font-size: 10px;
             font-family: 'Cairo', sans-serif;
             cursor: pointer;
-            min-width: 52px;
-            position: relative;
+            min-width: 48px;
+            flex-shrink: 0;
         }
 
-        .tool-icon-btn .icon { font-size: 20px; color: #e0e0e0; }
-        .tool-icon-btn .badge-dot {
-            position: absolute;
-            top: -2px;
-            right: 12px;
-            width: 7px;
-            height: 7px;
-            background: var(--gold);
-            border-radius: 50%;
-        }
-        .tool-icon-btn:hover, .tool-icon-btn.active { color: var(--gold); }
-        .tool-icon-btn:hover .icon { color: var(--gold); }
+        .tool-btn .icon { font-size: 18px; color: #fff; }
+        .tool-btn:active { color: var(--gold); }
     </style>
 </head>
 <body>
 
     <!-- 🟢 1. الشريط العلوي Header -->
     <header class="app-header">
-        <button class="header-btn" onclick="location.reload()" title="إغلاق">✕</button>
-        <div style="font-family: 'Amiri', serif; font-size: 18px; font-weight: bold; color: var(--gold);">
-            استوديو أثر 📖
+        <button class="icon-btn" onclick="location.reload()">✕</button>
+        <div class="header-title">
+            <span>📖</span> <span>استوديو أثر</span>
         </div>
-        <button class="export-badge" onclick="window.triggerExport()">تصدير</button>
+        <button class="export-btn" onclick="window.triggerExport()">تصدير</button>
     </header>
 
-    <!-- 📺 2. مسرح معاينة الكانفاس للفيديو -->
+    <!-- 📺 2. كادر العرض -->
     <main class="preview-stage">
         <canvas id="mainCanvas" width="720" height="1280"></canvas>
-        <video id="hiddenVideoElement" style="display:none;" crossorigin="anonymous"></video>
+        <video id="hiddenVideo" style="display:none;" crossorigin="anonymous"></video>
     </main>
 
-    <!-- 🎛️ 3. شريط أزرار التحكم اللحظية -->
+    <!-- 🎛️ 3. شريط التحكم اللحظي -->
     <div class="player-bar">
-        <div class="player-controls">
-            <button class="action-icon" onclick="window.undoAction()" title="تراجع">↩️</button>
-            <button class="action-icon" onclick="window.redoAction()" title="إعادة">↪️</button>
+        <div class="controls-group">
+            <button class="icon-btn" onclick="alert('تراجع')">↩️</button>
+            <button class="icon-btn" onclick="alert('تقدم')">↪️</button>
         </div>
-        <button class="action-icon play-btn" id="playPauseBtn" onclick="window.togglePlay()">▶</button>
-        <div class="player-controls">
-            <button class="action-icon" onclick="window.addKeyframe()" title="إضافة Keyframe">♦️<sup>+</sup></button>
-            <button class="action-icon" onclick="window.confirmEdits()" title="تأكيد">✓</button>
+        <span class="play-btn" id="playBtn" onclick="window.togglePlay()">▶</span>
+        <div class="controls-group">
+            <button class="icon-btn" onclick="alert('إضافة كي فريم')">♦️<sup>+</sup></button>
+            <button class="icon-btn" onclick="alert('تم الحفظ')">✓</button>
         </div>
     </div>
 
-    <!-- 🎞️ 4. التايم لاين المكون من التراكات والمؤشر الأبيض -->
-    <div class="timeline-area">
-        <div class="playhead-center"></div>
+    <!-- 🎞️ 4. التايم لاين -->
+    <div class="timeline-container">
+        <div class="playhead"></div>
+        <button class="floating-add" onclick="document.getElementById('mediaInput').click()">+</button>
 
-        <!-- زر الإضافة الوردي floating -->
-        <button class="floating-add-btn" onclick="document.getElementById('mediaInput').click()" title="إضافة وسائط/طبقة">+</button>
-
-        <div class="timeline-tracks-scroll" id="timelineScrollContainer">
-            <!-- التراك الرئيسي (فيديو) -->
+        <div class="tracks-scroll">
             <div>
-                <div class="main-track-label">الرئيسي 🎛️</div>
-                <div class="track-thumbnails-strip" id="videoTrackStrip">
-                    <div style="display:flex; align-items:center; justify-content:center; width:100%; color:var(--text-sub); font-size:11px;">
-                        اضغط ➕ أو اختر وسائط للبدء في المونتاج
-                    </div>
+                <div class="track-badge">الرئيسي 🎛️</div>
+                <div class="track-strip" id="videoTrackStrip">
+                    اضغط ➕ أو اختر وسائط للبدء
                 </div>
             </div>
-
-            <!-- تراك الصوت والمؤثرات -->
-            <div class="audio-track-strip" id="audioTrackStrip" style="display:none;">
-                🎙️ صوت المقطع الأصلي (منقى)
-            </div>
         </div>
 
-        <!-- مسطرة الوقت -->
-        <div class="timeline-ruler">
-            <span id="currentTimeDisplay">0:00.0</span>
-            <span style="letter-spacing: 3px; color: #444;">• • • • •</span>
-            <span id="totalDurationDisplay">0:00.0</span>
+        <div class="time-ruler">
+            <span id="curTime">0:00.0</span>
+            <span style="letter-spacing: 2px;">• • • • •</span>
+            <span id="durTime">0:00.0</span>
         </div>
     </div>
 
-    <!-- 🛠️ 5. شريط القوائم السفلية المكون من أيقونات كاب كات -->
-    <div class="bottom-toolbar-container">
-        
-        <!-- اللوحة الفرعية الأدوات -->
-        <div class="sub-tool-drawer" id="subToolDrawer"></div>
+    <!-- 🛠️ 5. الشريط السفلي للأدوات -->
+    <div class="bottom-nav">
+        <!-- اللوحة الفرعية المنبثقة -->
+        <div class="drawer-overlay" id="drawerOverlay">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:var(--gold); font-size:12px; font-weight:bold;" id="drawerTitle">المساعد الإسلامي</span>
+                <button class="icon-btn" onclick="window.closeDrawer()">✕</button>
+            </div>
+            <div id="drawerBody" style="margin-top:8px;"></div>
+        </div>
 
-        <!-- شريط الأيقونات الرئيسي -->
-        <div class="tools-horizontal-scroll">
-            <button class="tool-icon-btn" onclick="window.openDrawer('ai_assistant')">
-                <span class="badge-dot"></span>
+        <!-- أزرار كاب كات السفلية -->
+        <div class="tools-scroll">
+            <button class="tool-btn" onclick="window.openDrawer('ai')">
                 <span class="icon">✨</span><span>تأثير AI</span>
             </button>
-            <button class="tool-icon-btn" onclick="window.openDrawer('effects')">
-                <span class="badge-dot"></span>
+            <button class="tool-btn" onclick="window.openDrawer('text')">
+                <span class="icon">✍️</span><span>نص/آية</span>
+            </button>
+            <button class="tool-btn" onclick="window.openDrawer('effects')">
                 <span class="icon">🌟</span><span>المؤثرات</span>
             </button>
-            <button class="tool-icon-btn" onclick="window.openDrawer('filters')">
-                <span class="badge-dot"></span>
+            <button class="tool-btn" onclick="window.openDrawer('filters')">
                 <span class="icon">🎨</span><span>فلتر</span>
             </button>
-            <button class="tool-icon-btn" onclick="window.openDrawer('adjust')">
-                <span class="icon">🎛️</span><span>ضبط</span>
-            </button>
-            <button class="tool-icon-btn" onclick="window.openDrawer('text')">
-                <span class="icon">✍️</span><span>نص / آية</span>
-            </button>
-            <button class="tool-icon-btn" onclick="window.splitClip()">
+            <button class="tool-btn" onclick="alert('تقسيم المقطع')">
                 <span class="icon">✂️</span><span>تقسيم</span>
             </button>
-            <button class="tool-icon-btn" onclick="window.deleteClip()">
+            <button class="tool-btn" onclick="alert('حذف المقطع')">
                 <span class="icon">🗑️</span><span>حذف</span>
             </button>
-            <button class="tool-icon-btn" onclick="window.openDrawer('stickers')">
+            <button class="tool-btn" onclick="window.openDrawer('stickers')">
                 <span class="icon">🕌</span><span>ملصقات</span>
             </button>
         </div>
     </div>
 
-    <input type="file" id="mediaInput" accept="video/*,image/*,audio/*" style="display:none;" onchange="window.handleMediaUpload(event)" />
+    <input type="file" id="mediaInput" accept="video/*,image/*" style="display:none;" onchange="window.handleUpload(event)" />
 
-    <!-- 🚀 محرك تشغيل الاستوديو -->
     <script>
-        const state = {
-            video: document.getElementById('hiddenVideoElement'),
-            canvas: document.getElementById('mainCanvas'),
-            ctx: document.getElementById('mainCanvas').getContext('2d'),
-            isPlaying: false,
-            timedCaptions: [],
-            stickers: []
-        };
+        const v = document.getElementById('hiddenVideo');
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
 
-        function handleMediaUpload(event) {
-            const file = event.target.files[0];
+        function handleUpload(e) {
+            const file = e.target.files[0];
             if (!file) return;
-
-            const video = state.video;
-            video.src = URL.createObjectURL(file);
-
-            video.onloadeddata = () => {
-                state.canvas.width = video.videoWidth || 720;
-                state.canvas.height = video.videoHeight || 1280;
-
-                // رسم التراك البصري بـ Thumbnails
-                const trackStrip = document.getElementById('videoTrackStrip');
-                trackStrip.innerHTML = '';
-                for(let i=0; i<6; i++) {
-                    const img = document.createElement('img');
-                    img.className = 'thumb-img';
-                    img.src = video.src;
-                    trackStrip.appendChild(img);
-                }
-
-                document.getElementById('audioTrackStrip').style.display = 'flex';
-                document.getElementById('totalDurationDisplay').textContent = formatTime(video.duration);
-                window.renderLoop();
+            v.src = URL.createObjectURL(file);
+            v.onloadeddata = () => {
+                document.getElementById('videoTrackStrip').innerHTML = `🎬 ${file.name}`;
+                document.getElementById('durTime').textContent = v.duration.toFixed(1) + 's';
+                render();
             };
         }
 
         function togglePlay() {
-            const v = state.video;
-            if(!v.src) return alert("يرجى تحميل فيديو أولاً!");
-            if(v.paused) {
+            if (!v.src) return alert("اختر فيديو أولاً!");
+            if (v.paused) {
                 v.play();
-                document.getElementById('playPauseBtn').textContent = '⏸';
+                document.getElementById('playBtn').textContent = '⏸';
             } else {
                 v.pause();
-                document.getElementById('playPauseBtn').textContent = '▶';
+                document.getElementById('playBtn').textContent = '▶';
             }
         }
 
-        function renderLoop() {
-            const { video, canvas, ctx } = state;
-            if(video.src) {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                document.getElementById('currentTimeDisplay').textContent = formatTime(video.currentTime);
+        function render() {
+            if (v.src) {
+                ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+                document.getElementById('curTime').textContent = v.currentTime.toFixed(1) + 's';
             }
-            requestAnimationFrame(renderLoop);
-        }
-
-        function formatTime(seconds) {
-            if(isNaN(seconds)) return "0:00.0";
-            const mins = Math.floor(seconds / 60);
-            const secs = (seconds % 60).toFixed(1);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            requestAnimationFrame(render);
         }
 
         function openDrawer(type) {
-            const drawer = document.getElementById('subToolDrawer');
-            drawer.classList.add('active');
+            const overlay = document.getElementById('drawerOverlay');
+            const title = document.getElementById('drawerTitle');
+            const body = document.getElementById('drawerBody');
+            overlay.classList.add('active');
 
-            if(type === 'ai_assistant') {
-                drawer.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="color:var(--gold); font-weight:bold;">✨ المساعد الإسلامي بالذكاء الاصطناعي:</span>
-                        <button onclick="alert('جاري تحليل وفصل الموسيقى وتصفية الصوت البشري...')" style="background:linear-gradient(135deg, #0d3b2e, #1b5e20); color:#fff; border:1px solid var(--gold); padding:6px 14px; border-radius:20px; font-weight:bold; cursor:pointer;">
-                            🎵 إزالة الموسيقى بضغطة واحدة
-                        </button>
-                    </div>
-                `;
-            } else if(type === 'text') {
-                drawer.innerHTML = `
-                    <div style="display:flex; gap:8px;">
-                        <input type="text" id="verseInput" placeholder="اكتب الآية القرآنية هنا..." style="flex:1; padding:6px; background:#000; color:#fff; border:1px solid var(--border-line); border-radius:6px; font-family:'Amiri',serif;" />
-                        <button onclick="alert('تم إضافة الآية الموقوتة!')" style="background:var(--gold); color:#000; border:none; padding:6px 12px; border-radius:6px; font-weight:bold;">➕ إضافة</button>
-                    </div>
-                `;
+            if (type === 'ai') {
+                title.textContent = "✨ المساعد الإسلامي (AI)";
+                body.innerHTML = `<button onclick="alert('جاري إزالة الموسيقى وتصفية الصوت...')" style="width:100%; background:linear-gradient(135deg, #0d3b2e, #1b5e20); color:#fff; border:1px solid var(--gold); padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">🎵 إزالة الموسيقى بضغطة واحدة</button>`;
+            } else if (type === 'text') {
+                title.textContent = "✍️ إضافة آية قرآنية";
+                body.innerHTML = `<div style="display:flex; gap:6px;"><input type="text" placeholder="اكتب النص هنا..." style="flex:1; padding:6px; background:#000; color:#fff; border:1px solid var(--border); border-radius:6px;" /><button style="background:var(--gold); color:#000; border:none; padding:6px 12px; border-radius:6px; font-weight:bold;">إضافة</button></div>`;
             } else {
-                drawer.innerHTML = `<span style="color:var(--gold);">أدوات (${type}) متوفرة بالكامل...</span>`;
+                title.textContent = `أدوات (${type})`;
+                body.innerHTML = `<span style="color:var(--gold); font-size:11px;">قيد التحديث...</span>`;
             }
         }
 
-        function triggerExport() {
-            alert("⚙️ فتح نافذة التصدير الاحترافية (4K / 60FPS / Bitrate)...");
+        function closeDrawer() {
+            document.getElementById('drawerOverlay').classList.remove('active');
         }
 
-        function splitClip() { alert("✂️ تم تقسيم المقطع عند نقطة المؤشر الحالية!"); }
-        function deleteClip() { alert("🗑️ تم حذف الجزء المحدد!"); }
-        function undoAction() { alert("↩️ تراجع عن الحركة الأخيرة"); }
-        function redoAction() { alert("↪️ تقدم للخطوة التالية"); }
-        function addKeyframe() { alert("♦️ تم إضافة نقطة حركة Keyframe جديدة!"); }
-        function confirmEdits() { alert("✓ تم حفظ كافة التعديلات على الفيديو!"); }
+        function triggerExport() { alert("⚙️ جاري فتح نافذة التصدير الاحترافية..."); }
     </script>
 </body>
 </html>
-
