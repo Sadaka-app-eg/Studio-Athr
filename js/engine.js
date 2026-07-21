@@ -619,23 +619,36 @@ class AthrCoreEngine {
     /**
      * 18. تحديث زمن وشكل التايم لاين والمصغرات
      */
-    updateTimelineUI() {
-        const trackMainContainer = document.getElementById('trackMainVideoClips');
-        if (!trackMainContainer) return;
+   updateTimelineUI() {
+    const trackMainContainer = document.getElementById('trackMainVideoClips');
+    if (!trackMainContainer) return;
 
-        const mainClips = this.tracks.mainVideo.clips;
-        if (mainClips.length > 0) {
-            trackMainContainer.innerHTML = '';
-            mainClips.forEach(clip => {
-                const clipBlock = document.createElement('div');
-                clipBlock.className = 'clip-item-block';
-                clipBlock.style.cssText = "height: 52px; background: #181d22; border: 1px solid #2a9d8f; border-radius: 8px; position: relative; overflow: hidden; display: inline-flex; min-width: 150px; margin-right: 6px;";
+    const mainClips = this.tracks.mainVideo.clips;
+    if (mainClips.length > 0) {
+        trackMainContainer.innerHTML = '';
+        mainClips.forEach(clip => {
+            const clipBlock = document.createElement('div');
+            clipBlock.className = 'clip-item-block';
+            
+            // حساب عرض الكليب بناءً على مدته الزمانية
+            const calculatedWidth = Math.max((clip.endTime - clip.startTime) * 20, 200);
+            clipBlock.style.width = calculatedWidth + 'px';
 
-                this.generateVideoFilmstrip(clip, clipBlock);
-                trackMainContainer.appendChild(clipBlock);
-            });
-        }
+            clipBlock.innerHTML = `
+                <div class="track-clip-title-bar">
+                    🎬 ${clip.name} | ${this.formatTime(clip.endTime - clip.startTime)}
+                </div>
+                <div class="filmstrip-holder" id="strip_${clip.id}"></div>
+                <div class="clip-audio-waveform"></div>
+            `;
+
+            trackMainContainer.appendChild(clipBlock);
+            
+            // رسم المشاهد داخل الكليب المفرود
+            this.generateVideoFilmstrip(clip, document.getElementById(`strip_${clip.id}`));
+        });
     }
+}
 
     updateTimecodeDisplays() {
         const curEl = document.getElementById('rulerCurrentTime');
