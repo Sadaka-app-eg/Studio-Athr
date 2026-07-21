@@ -336,11 +336,14 @@
             <video id="hiddenSourceVideo" style="display:none;" crossorigin="anonymous" playsinline></video>
         </main>
 
-        <div style="height:40px; background:#14181c; border-top:1px solid #262e35; display:flex; justify-content:space-between; align-items:center; padding:0 16px;">
-            <button style="background:none; border:none; color:#fff; cursor:pointer;" onclick="alert('تراجع')">↩️</button>
-            <button style="background:none; border:none; color:var(--gold); font-size:22px; cursor:pointer;" id="mainPlayBtn" onclick="togglePlay()">▶</button>
-            <button style="background:none; border:none; color:#fff; cursor:pointer;" onclick="alert('تأكيد التعديلات')">✓</button>
-        </div>
+       <div style="height:40px; background:#14181c; border-top:1px solid #262e35; display:flex; justify-content:space-between; align-items:center; padding:0 16px;">
+    <div class="history-actions-group" style="display:flex; gap:8px;">
+        <button class="icon-action-btn" style="background:none; border:none; color:#ffffff; font-size:18px; cursor:pointer;" onclick="window.athrEngine.undo()" title="تراجع">↩️</button>
+        <button class="icon-action-btn" style="background:none; border:none; color:#ffffff; font-size:18px; cursor:pointer;" onclick="window.athrEngine.redo()" title="إعادة">↪️</button>
+    </div>
+    <button style="background:none; border:none; color:var(--gold); font-size:22px; cursor:pointer;" id="mainPlayBtn" onclick="togglePlay()">▶</button>
+    <button style="background:none; border:none; color:#fff; cursor:pointer;" onclick="alert('تأكيد التعديلات')">✓</button>
+</div>
 
         <div style="height:150px; background:#161a1e; border-top:1px solid #262e35; position:relative; display:flex; flex-direction:column;">
             <div style="position:absolute; left:50%; top:0; bottom:20px; width:2px; background:#fff; z-index:50; transform:translateX(-50%); pointer-events:none;"></div>
@@ -359,71 +362,156 @@
             </div>
         </div>
 
-        <nav style="background:#0d0f12; border-top:1px solid #262e35; position:relative;">
-         <div class="tools-horizontal-scroll" style="display:flex; gap:14px; overflow-x:auto; padding:10px 14px;">
-    <!-- أدوات الذكاء الاصطناعي والمساعد الإسلامي -->
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('✨ جاري تطبيق الفلتر والذكاء الاصطناعي...')">
-        <span style="font-size:20px; color:#fff;">✨</span><span>تأثير AI</span>
-    </button>
+       <!-- 🛠️ شريط الأدوات السفلي واللوحة المنزلقة (Bottom Navigation & Interactive Drawer) -->
+        <nav class="bottom-tools-navigation">
+            
+            <!-- الدرج المنزلق الفرعي للتعديلات (Sub-Tool Drawer Panel) -->
+            <div class="drawer-panel-overlay" id="drawerPanelOverlay">
+                <div class="drawer-header-bar">
+                    <span class="drawer-title-txt" id="drawerTitleTxt">أدوات</span>
+                    <button class="drawer-close-btn" onclick="closeDrawer()">✕</button>
+                </div>
+                <div class="drawer-body-content" id="drawerBodyContent">
+                    <!-- الخيارات الديناميكية هتنزل هنا فوراً -->
+                </div>
+            </div>
 
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="promptVerse()">
-        <span style="font-size:20px; color:#fff;">✍️</span><span>نص / آية</span>
-    </button>
+            <!-- الشريط السفلي القابل بالسحب أفقياً -->
+            <div class="tools-horizontal-scroll">
+                <button class="tool-item-btn" onclick="openDrawer('audio')">
+                    <span class="tool-icon">🎵</span>
+                    <span class="tool-label">الصوت</span>
+                </button>
 
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🌙 ملصقات وأذكار إسلامية')">
-        <span style="font-size:20px; color:#fff;">🌙</span><span>ملصقات</span>
-    </button>
+                <button class="tool-item-btn" onclick="openDrawer('speed')">
+                    <span class="tool-icon">⚡</span>
+                    <span class="tool-label">السرعة</span>
+                </button>
 
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🕌 المكتبة الإسلامية والمؤثرات')">
-        <span style="font-size:20px; color:#fff;">🕌</span><span>المكتبة</span>
-    </button>
+                <button class="tool-item-btn" onclick="openDrawer('text')">
+                    <span class="tool-icon">✍️</span>
+                    <span class="tool-label">نص / آية</span>
+                </button>
 
-    <!-- أدوات المونتاج الأساسية -->
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('✂️ تم تقسيم المقطع!')">
-        <span style="font-size:20px; color:#fff;">✂️</span><span>تقسيم</span>
-    </button>
+                <button class="tool-item-btn" onclick="openDrawer('stickers')">
+                    <span class="tool-icon">🌙</span>
+                    <span class="tool-label">ملصقات</span>
+                </button>
 
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('⚡ التحكم بالسرعة و Speed Curve')">
-        <span style="font-size:20px; color:#fff;">⚡</span><span>السرعة</span>
-    </button>
+                <button class="tool-item-btn" onclick="openDrawer('islamic')">
+                    <span class="tool-icon">🕌</span>
+                    <span class="tool-label">المكتبة</span>
+                </button>
 
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🎵 التحكم بالصوت واستخراج الصوت')">
-        <span style="font-size:20px; color:#fff;">🎵</span><span>الصوت</span>
-    </button>
+                <button class="tool-item-btn" onclick="openDrawer('ai')">
+                    <span class="tool-icon">✨</span>
+                    <span class="tool-label">تأثير AI</span>
+                </button>
 
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🎨 الفلاتر السينمائية')">
-        <span style="font-size:20px; color:#fff;">🎨</span><span>فلاتر</span>
-    </button>
+                <button class="tool-item-btn" onclick="splitClip()">
+                    <span class="tool-icon">✂️</span>
+                    <span class="tool-label">تقسيم</span>
+                </button>
 
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🎛️ تعديل الإضاءة والتباين')">
-        <span style="font-size:20px; color:#fff;">🎛️</span><span>ضبط</span>
-    </button>
+                <button class="tool-item-btn" onclick="openDrawer('filters')">
+                    <span class="tool-icon">🎨</span>
+                    <span class="tool-label">فلاتر</span>
+                </button>
 
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🌟 الانتقالات السينمائية')">
-        <span style="font-size:20px; color:#fff;">🌟</span><span>انتقالات</span>
-    </button>
+                <button class="tool-item-btn" onclick="openDrawer('adjust')">
+                    <span class="tool-icon">🎛️</span>
+                    <span class="tool-label">ضبط</span>
+                </button>
 
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🎭 القناع Mask')">
-        <span style="font-size:20px; color:#fff;">🎭</span><span>القناع</span>
-    </button>
-
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🖼️ إضافة طبقة عائمة PiP')">
-        <span style="font-size:20px; color:#fff;">🖼️</span><span>طبقات PiP</span>
-    </button>
-
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🟩 إزالة الكروما الخضراء')">
-        <span style="font-size:20px; color:#fff;">🟩</span><span>كروما</span>
-    </button>
-
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('📱 تغيير الأبعاد (9:16, 16:9)')">
-        <span style="font-size:20px; color:#fff;">📱</span><span>الأبعاد</span>
-    </button>
-
-    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🗑️ تم الحذف!')">
-        <span style="font-size:20px; color:#fff;">🗑️</span><span>حذف</span>
-    </button>
-</div>
+                <button class="tool-item-btn" onclick="deleteClip()">
+                    <span class="tool-icon">🗑️</span>
+                    <span class="tool-label">حذف</span>
+                </button>
+            </div>
         </nav>
+
+
+<!-- الدرج السفلي الخاص بقسم الصوت (CapCut / InShot Audio Drawer) -->
+            <div class="drawer-panel-overlay" id="audioDrawerPanel">
+                <div class="drawer-header-bar">
+                    <span class="drawer-title-txt">🎵 الصوتيات والتسجيل</span>
+                    <button class="drawer-close-btn" onclick="closeAudioDrawer()">✕</button>
+                </div>
+
+                <!-- القائمة الرئيسية الأربعة الجانبية فقط -->
+                <div class="audio-main-buttons-grid">
+                    <button class="audio-btn btn-music-file" onclick="triggerAudioUpload()">
+                        <span class="a-icon">🎵</span>
+                        <span>موسيقى</span>
+                    </button>
+
+                    <button class="audio-btn btn-fx" onclick="openAudioSubMenu('fx_library')">
+                        <span class="a-icon">🌟</span>
+                        <span>المؤثرات</span>
+                    </button>
+
+                    <button class="audio-btn btn-ai-speech" onclick="openAudioSubMenu('ai_speech')">
+                        <span class="a-icon">🤖</span>
+                        <span>خطاب AI</span>
+                    </button>
+
+                    <button class="audio-btn btn-record" onclick="openAudioSubMenu('record')">
+                        <span class="a-icon">🎙️</span>
+                        <span>سجل</span>
+                    </button>
+                </div>
+
+                <!-- منطقة خيارات الأزرار الأربعة -->
+                <div id="audioSubMenuContent" class="audio-sub-content"></div>
+            </div>
+
+            <!-- شريط الإجراءات التفاعلي المكتمل لتراك الصوت المحدد -->
+            <div class="audio-action-ribbon" id="audioClipContextRibbon" style="display: none;">
+                <button class="audio-ribbon-btn gold-text" onclick="openAudioSubMenu('athr_effects')">🕌 مؤثرات أثر ✨</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="openAudioSubMenu('volume')">🎚️ حجم الصوت</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="splitAudioClip()">✂️ تقسيم</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="deleteAudioClip()">🗑️ حذف</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="triggerAudioUpload()">🔄 اختيار الصوت</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="openAudioSubMenu('speed')">⚡ السرعة</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="openAudioSubMenu('enhance')">✨ تحسين الصوت</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="openAudioSubMenu('eq')">🎛️ تعادل (EQ)</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="openAudioSubMenu('pulse')">💓 نبض</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="openAudioSubMenu('vfx')">🎬 تأثير الفيديو</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="openAudioSubMenu('denoise')">🔇 خفض الضجيج</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="duplicateCurrentAudioClip()">🔁 تكرار</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="copyCurrentAudioClip()">📋 نسخ</button>
+                <div class="ribbon-divider"></div>
+
+                <button class="audio-ribbon-btn" onclick="pasteAudioClip()">📂 مكرر</button>
+            </div>
+
+            <input type="file" id="nativeAudioInput" accept="audio/*" style="display:none;" onchange="handleAudioImport(event)">
+
+        
     </section>
 
     <!-- ==========================================================================
@@ -564,11 +652,14 @@
     </script>
 
     <!-- 📦 السكربتات الموديلارية الحقيقية لمشروع استوديو أثر -->
+   <!-- 📦 السكربتات الموديلارية الحقيقية لمشروع استوديو أثر -->
     <script src="js/engine.js"></script>
+    <script src="js/audio.js"></script> <!-- 👈 ملف هندسة وتعديل الصوت الشامل -->
     <script src="js/timeline.js"></script>
     <script src="js/islamic-assistant.js"></script>
     <script src="js/ai-tools.js"></script>
     <script src="js/export-engine.js"></script>
     <script src="js/ui-controller.js"></script>
+    
 </body>
 </html>
