@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>استوديو أثر - Studio Athr Pro</title>
+    <!-- ربط ملف الـ Manifest والأيقونات الرسمية -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="assets/icons/icon-512.png">
 
     <!-- استدعاء الخطوط العربية الفاخرة والعثمانية -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,11 +69,13 @@
         <!-- هيدر الرئيسية -->
         <header class="home-top-bar">
             <button class="icon-btn-gold" onclick="safeOpenModal('settingsModal')" title="الإعدادات">⚙️</button>
-            <div class="brand-title">
-                <span class="brand-icon">📖</span>
-                <span class="brand-name">اسْتُودْيُو أثَرٍ</span>
-                <span class="pro-badge">PRO</span>
-            </div>
+            <!-- في هيدر الصفحة الرئيسية -->
+<div class="brand-title">
+    <img src="assets/icons/icon-192.png" alt="أثر" style="width: 28px; height: 28px; border-radius: 6px; vertical-align: middle;">
+    <span class="brand-name">اسْتُودْيُو أثَرٍ</span>
+    <span class="pro-badge">PRO</span>
+</div>
+
             <button class="icon-btn-gold" onclick="alert('👑 عضوية بريميوم مفعلة مدى الحياة!')" title="العضوية الدائمة">👑</button>
         </header>
 
