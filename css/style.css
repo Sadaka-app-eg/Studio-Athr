@@ -982,6 +982,91 @@ html, body {
     gap: 8px;
 }
 
+
+/* الأزرار الملونة الأربعة في القائمة الرئيسية للصوت */
+.audio-main-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 10px 4px;
+}
+
+.audio-btn {
+    height: 60px;
+    border-radius: 12px;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.btn-music-file { background: linear-gradient(135deg, #11998e, #38ef7d); }
+.btn-fx { background: linear-gradient(135deg, #f7b731, #eb3b5a); }
+.btn-ai-speech { background: linear-gradient(135deg, #6a11cb, #2575fc); }
+.btn-record { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
+
+/* المستطيل الأبيض المحدد للتراك الصوتي */
+.track-clip-audio.selected {
+    outline: 2px solid #ffffff !important;
+    outline-offset: -1px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.9), inset 0 0 6px rgba(255, 255, 255, 0.4);
+    border-radius: 6px;
+}
+
+/* شريط الإجراءات التفاعلي ذو الفواصل الخفيفة | */
+.audio-action-ribbon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 12px;
+    background: #111417;
+    border-top: 1px solid #22272c;
+    scrollbar-width: none;
+}
+.audio-action-ribbon::-webkit-scrollbar { display: none; }
+
+.audio-ribbon-btn {
+    background: none;
+    border: none;
+    color: #cccccc;
+    font-size: 11px;
+    white-space: nowrap;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.audio-ribbon-btn.gold-text {
+    color: #d4af37;
+    font-weight: bold;
+}
+
+.ribbon-divider {
+    width: 1px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+}
+
+/* أزرار التراجع والتقدم الأيقونية فقط */
+.icon-action-btn {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+
 /* --------------------------------------------------------------------------
    10. التوافقية والتجاوب مع جميع الشاشات (Responsive Breakpoints)
    -------------------------------------------------------------------------- */
