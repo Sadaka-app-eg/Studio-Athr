@@ -4,56 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>استوديو أثر - Studio Athr Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- استدعاء الخطوط العربية الفاخرة -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg-app: #121212;
-            --bg-panel: #1a1a1a;
-            --bg-card: #222222;
+            --bg-app: #0d0f12;
+            --bg-panel: #14181c;
+            --bg-card: #1d2228;
             --gold: #d4af37;
-            --cyan: #38b2ac;
-            --pink: #ff2d55;
-            --border: #2a2a2a;
-            --text-muted: #888888;
+            --gold-light: #f3e5ab;
+            --green-islamic: #0f382c;
+            --cyan-track: #2a9d8f;
+            --pink-accent: #e76f51;
+            --border-line: #262e35;
+            --text-main: #ffffff;
+            --text-muted: #8e9aaf;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; color: #fff; font-family: 'Cairo', sans-serif; display: flex; flex-direction: column; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #000000; color: var(--text-main); font-family: 'Cairo', sans-serif; display: flex; flex-direction: column; }
 
         /* 🟢 1. الهيدر العلوي */
         .app-header {
-            height: 46px;
+            height: 48px;
             background: var(--bg-app);
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0 14px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-line);
             flex-shrink: 0;
+            z-index: 100;
         }
 
-        .header-title { font-family: 'Amiri', serif; font-size: 16px; color: var(--gold); display: flex; align-items: center; gap: 6px; }
-        .export-btn { background: var(--gold); color: #000; font-weight: 800; border: none; padding: 5px 16px; border-radius: 16px; font-size: 12px; cursor: pointer; }
-        .icon-btn { background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; }
+        .header-title { font-family: 'Amiri', serif; font-size: 18px; color: var(--gold); display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        .export-btn { background: var(--gold); color: #000; font-weight: 800; border: none; padding: 6px 18px; border-radius: 20px; font-size: 12px; cursor: pointer; box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3); }
+        .icon-btn { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; opacity: 0.85; }
+        .icon-btn:active { opacity: 1; color: var(--gold); }
 
         /* 📺 2. كادر الشاشة والمعاينة */
         .preview-stage {
             flex: 1;
             position: relative;
-            background: #050505;
+            background: #040506;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
         }
 
-        #mainCanvas { max-width: 100%; max-height: 100%; object-fit: contain; background: #000; }
+        #mainCanvas { max-width: 100%; max-height: 100%; object-fit: contain; background: #000000; box-shadow: 0 0 25px rgba(0,0,0,0.9); }
 
-        /* 🎛️ 3. شريط التشغيل */
+        /* 🎛️ 3. شريط التحكم والتشغيل والـ Keyframe */
         .player-bar {
-            height: 38px;
+            height: 40px;
             background: var(--bg-app);
-            border-top: 1px solid var(--border);
+            border-top: 1px solid var(--border-line);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -62,33 +69,36 @@
         }
 
         .controls-group { display: flex; align-items: center; gap: 16px; }
-        .play-btn { font-size: 20px; color: #fff; cursor: pointer; }
+        .play-btn { font-size: 22px; color: var(--gold); cursor: pointer; }
 
-        /* 🎞️ 4. منطقة التايم لاين */
+        /* 🎞️ 4. التايم لاين المطور مع مؤشر المنتصف والزر الوردي */
         .timeline-container {
-            height: 140px;
+            height: 155px;
             background: var(--bg-panel);
-            border-top: 1px solid var(--border);
+            border-top: 1px solid var(--border-line);
             position: relative;
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            overflow: hidden;
         }
 
-        .playhead {
+        /* خط المنتصف الأبيض الثابت */
+        .playhead-center {
             position: absolute;
             left: 50%;
             top: 0;
-            bottom: 20px;
+            bottom: 22px;
             width: 2px;
             background: #ffffff;
-            z-index: 10;
+            z-index: 50;
             pointer-events: none;
             transform: translateX(-50%);
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
         }
-        .playhead::before {
-            content: ''; position: absolute; top: 0; left: -4px;
-            width: 10px; height: 7px; background: #fff;
+        .playhead-center::before {
+            content: ''; position: absolute; top: 0; left: -5px;
+            width: 12px; height: 8px; background: #ffffff;
             clip-path: polygon(0 0, 100% 0, 50% 100%);
         }
 
@@ -104,68 +114,69 @@
         .tracks-scroll::-webkit-scrollbar { display: none; }
 
         .track-badge {
-            background: var(--cyan);
+            background: var(--cyan-track);
             color: #000;
             font-size: 9px;
             font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 3px;
+            padding: 2px 8px;
+            border-radius: 4px;
             width: fit-content;
             margin-bottom: 3px;
         }
 
         .track-strip {
-            height: 44px;
-            background: #223330;
-            border: 1px solid var(--cyan);
+            height: 48px;
+            background: #152826;
+            border: 1px solid var(--cyan-track);
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 220px;
-            padding: 0 10px;
-            font-size: 10px;
+            min-width: 240px;
+            padding: 0 12px;
+            font-size: 11px;
             color: #a0aec0;
             white-space: nowrap;
         }
 
+        /* زر الإضافة الوردي العائم فوق التايم لاين */
         .floating-add {
             position: absolute;
-            left: 12px;
-            bottom: 26px;
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            background: var(--pink);
+            left: 14px;
+            bottom: 30px;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: var(--pink-accent);
             color: #fff;
             border: none;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 20;
-            box-shadow: 0 2px 8px rgba(255, 45, 85, 0.4);
+            z-index: 60;
+            box-shadow: 0 4px 12px rgba(231, 111, 81, 0.4);
         }
 
         .time-ruler {
-            height: 20px;
-            background: #111;
-            border-top: 1px solid var(--border);
+            height: 22px;
+            background: #08090a;
+            border-top: 1px solid var(--border-line);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 12px;
-            font-size: 9px;
+            padding: 0 14px;
+            font-size: 10px;
             color: var(--text-muted);
             font-family: monospace;
         }
 
-        /* 🛠️ 5. شريط القوائم السفلية */
+        /* 🛠️ 5. شريط القوائم السفلية واللوحة المنبثقة */
         .bottom-nav {
             background: var(--bg-app);
-            border-top: 1px solid var(--border);
+            border-top: 1px solid var(--border-line);
             position: relative;
             flex-shrink: 0;
             padding-bottom: env(safe-area-inset-bottom);
@@ -176,19 +187,19 @@
             position: absolute;
             bottom: 100%;
             left: 0; right: 0;
-            background: #181818;
-            border-top: 1px solid var(--border);
-            padding: 12px 14px;
+            background: #14171c;
+            border-top: 1px solid var(--gold);
+            padding: 14px;
             z-index: 100;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 -8px 25px rgba(0,0,0,0.7);
         }
         .drawer-overlay.active { display: block; }
 
         .tools-scroll {
             display: flex;
-            gap: 12px;
+            gap: 14px;
             overflow-x: auto;
-            padding: 8px 12px;
+            padding: 10px 14px;
             scrollbar-width: none;
         }
         .tools-scroll::-webkit-scrollbar { display: none; }
@@ -197,84 +208,86 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
+            gap: 4px;
             background: none;
             border: none;
-            color: #ccc;
+            color: var(--text-muted);
             font-size: 10px;
             font-family: 'Cairo', sans-serif;
             cursor: pointer;
-            min-width: 48px;
+            min-width: 52px;
             flex-shrink: 0;
+            transition: color 0.2s;
         }
 
-        .tool-btn .icon { font-size: 18px; color: #fff; }
-        .tool-btn:active { color: var(--gold); }
+        .tool-btn .icon { font-size: 20px; color: #ffffff; }
+        .tool-btn:hover, .tool-btn:active { color: var(--gold); }
+        .tool-btn:hover .icon { color: var(--gold); }
     </style>
 </head>
 <body>
 
-    <!-- 🟢 1. الهيدر العلوي -->
+    <!-- 🟢 1. الشريط العلوي Header -->
     <header class="app-header">
-        <button class="icon-btn" onclick="location.reload()">✕</button>
+        <button class="icon-btn" onclick="location.reload()" title="إغلاق/إعادة تحميل">✕</button>
         <div class="header-title">
-            <span>📖</span> <span>استوديو أثر</span>
+            <span>📖</span> <span>اسْتُودْيُو أثَرٍ الاحترافي</span>
         </div>
-        <button class="export-btn" onclick="window.athrExport.startExport()">تصدير</button>
+        <button class="export-btn" onclick="window.athrExport.openExportModal()">تصدير 🎬</button>
     </header>
 
-    <!-- 📺 2. كادر العرض -->
+    <!-- 📺 2. كادر المعاينة العريض Canvas -->
     <main class="preview-stage">
         <canvas id="mainCanvas" width="720" height="1280"></canvas>
         <video id="hiddenVideo" style="display:none;" crossorigin="anonymous" playsinline></video>
     </main>
 
-    <!-- 🎛️ 3. شريط التحكم اللحظي -->
+    <!-- 🎛️ 3. شريط التحكم اللحظي والكي فريم -->
     <div class="player-bar">
         <div class="controls-group">
-            <button class="icon-btn" onclick="window.athrEngine.undo()">↩️</button>
-            <button class="icon-btn" onclick="window.athrEngine.redo()">↪️</button>
+            <button class="icon-btn" onclick="window.athrEngine.undo()" title="تراجع">↩️</button>
+            <button class="icon-btn" onclick="window.athrEngine.redo()" title="إعادة">↪️</button>
         </div>
         <span class="play-btn" id="playBtn" onclick="window.athrEngine.togglePlay()">▶</span>
         <div class="controls-group">
-            <button class="icon-btn" onclick="window.athrEngine.addKeyframeAtCurrentTime()">♦️<sup>+</sup></button>
-            <button class="icon-btn" onclick="window.closeDrawer()">✓</button>
+            <button class="icon-btn" onclick="window.athrEngine.addKeyframeAtCurrentTime()" title="إضافة Keyframe">♦️<sup>+</sup></button>
+            <button class="icon-btn" onclick="window.closeDrawer()" title="تأكيد التعديل">✓</button>
         </div>
     </div>
 
-    <!-- 🎞️ 4. التايم لاين -->
+    <!-- 🎞️ 4. التايم لاين CapCut Style -->
     <div class="timeline-container">
-        <div class="playhead"></div>
-        <button class="floating-add" onclick="document.getElementById('mediaInput').click()">+</button>
+        <div class="playhead-center"></div>
+        <button class="floating-add" onclick="document.getElementById('mediaInput').click()" title="إضافة وسائط">+</button>
 
         <div class="tracks-scroll" id="tracksContainer">
             <div>
                 <div class="track-badge">الرئيسي 🎛️</div>
                 <div class="track-strip" id="videoTrackStrip">
-                    اضغط ➕ أو اختر وسائط للبدء
+                    اضغط ➕ أو اختر وسائط للبدء في المونتاج
                 </div>
             </div>
         </div>
 
         <div class="time-ruler">
             <span id="curTime">0:00.0</span>
-            <span style="letter-spacing: 2px;">• • • • •</span>
+            <span style="letter-spacing: 3px; color: #444;">• • • • •</span>
             <span id="durTime">0:00.0</span>
         </div>
     </div>
 
-    <!-- 🛠️ 5. الشريط السفلي للأدوات -->
+    <!-- 🛠️ 5. شريط القوائم السفلية -->
     <div class="bottom-nav">
-        <!-- اللوحة الفرعية المنبثقة -->
+        <!-- اللوحة الفرعية المنبثقة فوق الشريط -->
         <div class="drawer-overlay" id="drawerOverlay">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="color:var(--gold); font-size:12px; font-weight:bold;" id="drawerTitle">المساعد الإسلامي</span>
+                <span style="color:var(--gold); font-size:13px; font-weight:bold;" id="drawerTitle">المساعد الإسلامي</span>
                 <button class="icon-btn" onclick="window.closeDrawer()">✕</button>
             </div>
-            <div id="drawerBody" style="margin-top:8px;"></div>
+            <div id="drawerBody" style="margin-top:10px;"></div>
         </div>
 
-        <!-- أزرار كاب كات السفلية -->
+        <!-- أزرار كاب كات السفلية الملساء -->
         <div class="tools-scroll">
             <button class="tool-btn" onclick="window.openDrawer('ai')">
                 <span class="icon">✨</span><span>تأثير AI</span>
@@ -282,31 +295,39 @@
             <button class="tool-btn" onclick="window.openDrawer('text')">
                 <span class="icon">✍️</span><span>نص/آية</span>
             </button>
+            <button class="tool-btn" onclick="window.openDrawer('islamic_lib')">
+                <span class="icon">🕌</span><span>المكتبة</span>
+            </button>
             <button class="tool-btn" onclick="window.openDrawer('effects')">
                 <span class="icon">🌟</span><span>المؤثرات</span>
             </button>
             <button class="tool-btn" onclick="window.openDrawer('filters')">
-                <span class="icon">🎨</span><span>فلتر</span>
+                <span class="icon">🎨</span><span>فلاتر</span>
             </button>
             <button class="tool-btn" onclick="window.athrEngine.splitCurrentClip()">
                 <span class="icon">✂️</span><span>تقسيم</span>
             </button>
+
             <button class="tool-btn" onclick="window.athrEngine.deleteSelectedClip()">
                 <span class="icon">🗑️</span><span>حذف</span>
             </button>
             <button class="tool-btn" onclick="window.openDrawer('stickers')">
-                <span class="icon">🕌</span><span>ملصقات</span>
+                <span class="icon">🌙</span><span>ملصقات</span>
             </button>
         </div>
     </div>
 
-    <input type="file" id="mediaInput" accept="video/*,image/*" style="display:none;" onchange="window.handleUpload(event)" />
+    <input type="file" id="mediaInput" accept="video/*,image/*,audio/*" style="display:none;" onchange="window.handleUpload(event)" />
 
-    <!-- تحميل المحرك الحقيقي المكتمل -->
+    <!-- 📦 السكربتات الموديلارية الحقيقية لمشروع استوديو أثر -->
     <script src="js/engine.js"></script>
     <script src="js/islamic-assistant.js"></script>
+    <script src="js/ai-tools.js"></script>
     <script src="js/export-engine.js"></script>
-    
+    <script src="js/media-library.js"></script>
+    <script src="js/timeline.js"></script>
+
+    <!-- 🚀 ربط الواجهة بالمحركات الحقيقية -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             window.athrEngine.init('mainCanvas', 'hiddenVideo');
@@ -326,38 +347,54 @@
             overlay.classList.add('active');
 
             if (type === 'ai') {
-                title.textContent = "✨ المساعد الإسلامي (إزالة الموسيقى بالذكاء الاصطناعي)";
+                title.textContent = "✨ المساعد الإسلامي والذكاء الاصطناعي";
                 body.innerHTML = `
-                    <button onclick="window.athrIslamic.removeMusic()" style="width:100%; background:linear-gradient(135deg, #0d3b2e, #1b5e20); color:#fff; border:1px solid var(--gold); padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">
-                        🎵 إزالة الموسيقى والآلات وتصفية صوت القارئ/المتحدث
-                    </button>
-                    <div id="aiProgressLog" style="color:var(--gold); font-size:11px; margin-top:6px; text-align:center;"></div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button onclick="window.athrIslamic.removeMusic()" style="background:linear-gradient(135deg, #0f382c, #1b5e20); color:#fff; border:1px solid var(--gold); padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">
+                            🎵 إزالة الموسيقى والآلات وتصفية صوت القارئ/المتحدث
+                        </button>
+                        <button onclick="window.triggerAITranscribe()" style="background:#1d2228; color:var(--gold); border:1px solid var(--border-line); padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">
+                            🎙️ التفريغ التلقائي للآيات والكلام (Auto-Captions AI)
+                        </button>
+                        <div id="aiProgressLog" style="color:var(--gold); font-size:11px; text-align:center;"></div>
+                    </div>
                 `;
             } else if (type === 'text') {
                 title.textContent = "✍️ إضافة آية قرآنية / نص موقوت";
                 body.innerHTML = `
-                    <div style="display:flex; flex-direction:column; gap:6px;">
-                        <input type="text" id="verseTextInput" placeholder="اكتب الآية الكريمة..." style="width:100%; padding:6px; background:#000; color:#fff; border:1px solid var(--border); border-radius:6px; font-family:'Amiri',serif;" />
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <input type="text" id="verseTextInput" placeholder="اكتب الآية الكريمة هنا..." style="width:100%; padding:8px; background:#000; color:#fff; border:1px solid var(--border-line); border-radius:6px; font-family:'Amiri',serif;" />
                         <div style="display:flex; gap:6px;">
-                            <input type="number" id="vStart" placeholder="من (ثانية)" style="width:50%; padding:4px; background:#000; color:#fff; border:1px solid var(--border); border-radius:4px;" />
-                            <input type="number" id="vEnd" placeholder="إلى (ثانية)" style="width:50%; padding:4px; background:#000; color:#fff; border:1px solid var(--border); border-radius:4px;" />
+                            <input type="number" id="vStart" placeholder="من (ثانية)" style="width:50%; padding:6px; background:#000; color:#fff; border:1px solid var(--border-line); border-radius:4px;" />
+                            <input type="number" id="vEnd" placeholder="إلى (ثانية)" style="width:50%; padding:6px; background:#000; color:#fff; border:1px solid var(--border-line); border-radius:4px;" />
                         </div>
-                        <button onclick="window.addVerseFromDrawer()" style="background:var(--gold); color:#000; border:none; padding:6px; border-radius:6px; font-weight:bold; cursor:pointer;">➕ إضافة للنص الموقوت</button>
+                        <button onclick="window.addVerseFromDrawer()" style="background:var(--gold); color:#000; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;">➕ إضافة للنص الموقوت</button>
+                    </div>
+                `;
+            } else if (type === 'islamic_lib') {
+                title.textContent = "🕌 المكتبة الإسلامية والقوالب الجاهزة";
+                body.innerHTML = `
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button onclick="window.athrLibrary.applyTemplate('dawah')" style="background:#1f262c; color:var(--gold); border:1px solid var(--gold); padding:8px 12px; border-radius:6px; cursor:pointer;">📜 قالب دعوي احترافي</button>
+                        <button onclick="window.athrLibrary.applyTemplate('reels')" style="background:#1f262c; color:#fff; border:1px solid var(--border-line); padding:8px 12px; border-radius:6px; cursor:pointer;">📱 قالب ريلز (9:16)</button>
+                        <button onclick="window.athrLibrary.applyTemplate('youtube')" style="background:#1f262c; color:#fff; border:1px solid var(--border-line); padding:8px 12px; border-radius:6px; cursor:pointer;">📺 قالب يوتيوب (16:9)</button>
                     </div>
                 `;
             } else if (type === 'stickers') {
-                title.textContent = "🕌 ملصقات إسلامية سريعة";
+                title.textContent = "🕌 ملصقات وأذكار إسلامية";
                 body.innerHTML = `
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button onclick="window.athrEngine.addSticker('﷽')" style="background:#222; color:var(--gold); border:1px solid var(--gold); padding:6px 12px; border-radius:6px; font-family:'Amiri',serif; cursor:pointer;">﷽</button>
-                        <button onclick="window.athrEngine.addSticker('ﷺ')" style="background:#222; color:var(--gold); border:1px solid var(--gold); padding:6px 12px; border-radius:6px; font-family:'Amiri',serif; cursor:pointer;">ﷺ</button>
-                        <button onclick="window.athrEngine.addSticker('🕌')" style="background:#222; color:#fff; border:1px solid var(--border); padding:6px 12px; border-radius:6px; cursor:pointer;">🕌</button>
-                        <button onclick="window.athrEngine.addSticker('✨')" style="background:#222; color:#fff; border:1px solid var(--border); padding:6px 12px; border-radius:6px; cursor:pointer;">✨</button>
+                        <button onclick="window.athrEngine.addSticker('﷽')" style="background:#1d2228; color:var(--gold); border:1px solid var(--gold); padding:6px 12px; border-radius:6px; font-family:'Amiri',serif; cursor:pointer;">﷽</button>
+                        <button onclick="window.athrEngine.addSticker('ﷺ')" style="background:#1d2228; color:var(--gold); border:1px solid var(--gold); padding:6px 12px; border-radius:6px; font-family:'Amiri',serif; cursor:pointer;">ﷺ</button>
+                        <button onclick="window.athrEngine.addSticker('ﷻ')" style="background:#1d2228; color:var(--gold); border:1px solid var(--gold); padding:6px 12px; border-radius:6px; font-family:'Amiri',serif; cursor:pointer;">ﷻ</button>
+                        <button onclick="window.athrEngine.addSticker('🕌')" style="background:#1d2228; color:#fff; border:1px solid var(--border-line); padding:6px 12px; border-radius:6px; cursor:pointer;">🕌</button>
+                        <button onclick="window.athrEngine.addSticker('📖')" style="background:#1d2228; color:#fff; border:1px solid var(--border-line); padding:6px 12px; border-radius:6px; cursor:pointer;">📖</button>
+                        <button onclick="window.athrEngine.addSticker('✨')" style="background:#1d2228; color:#fff; border:1px solid var(--border-line); padding:6px 12px; border-radius:6px; cursor:pointer;">✨</button>
                     </div>
                 `;
             } else {
                 title.textContent = `أدوات (${type})`;
-                body.innerHTML = `<span style="color:var(--gold); font-size:11px;">اختر مقطع فيديو للبدء بالتعديل عليه المباشر.</span>`;
+                body.innerHTML = `<span style="color:var(--gold); font-size:11px;">اختر مقطع وسائط للبدء بالتعديل عليه فوراً.</span>`;
             }
         }
 
@@ -373,6 +410,17 @@
                 window.athrEngine.addTimedCaption(text, start, end);
                 closeDrawer();
             }
+        }
+
+        function triggerAITranscribe() {
+            const log = document.getElementById('aiProgressLog');
+            window.athrAI.transcribeAudio(
+                window.athrEngine.video,
+                (progress, msg) => { if (log) log.textContent = msg; },
+                (caption) => {
+                    window.athrEngine.addTimedCaption(caption.text, caption.start, caption.end);
+                }
+            );
         }
     </script>
 </body>
