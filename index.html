@@ -20,45 +20,230 @@
     <link rel="stylesheet" href="css/style.css">
 
     <!-- CSS وقائي يضمن عدم انهيار التصميم لو ملف style.css لم يحمل -->
-    <style>
-        :root {
-            --bg-app: #0d0f12;
-            --bg-panel: #14181c;
-            --bg-card: #1d2228;
-            --gold: #d4af37;
-            --green-islamic: #0f382c;
-            --border-line: #262e35;
+   <style>
+    :root {
+        --bg-app: #0d0f12;
+        --bg-panel: #14181c;
+        --bg-card: #1d2228;
+        --gold: #d4af37;
+        --green-islamic: #0f382c;
+        --cyan-track: #2a9d8f;
+        --pink-accent: #e76f51;
+        --border-line: #262e35;
+        --text-main: #ffffff;
+        --text-muted: #8e9aaf;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+    html, body { 
+        width: 100%; 
+        height: 100%; 
+        overflow: hidden; 
+        background: #000000; 
+        color: var(--text-main); 
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* 📱 تثبيت إطار التطبيق المحترف لو اتفتح على كمبيوتر أو شاشة عريضة */
+    .app-screen { 
+        display: none; 
+        width: 100%; 
+        max-width: 480px; /* مقاس أقصى لعرض الموبايل العريض */
+        height: 100%; 
+        max-height: 920px;
+        flex-direction: column; 
+        position: relative; 
+        background: var(--bg-app); 
+        box-shadow: 0 0 50px rgba(0,0,0,0.9);
+        border-left: 1px solid var(--border-line);
+        border-right: 1px solid var(--border-line);
+    }
+    .app-screen.active { display: flex; z-index: 20; }
+
+    /* 🟢 1. الهيدر العلوي */
+    .home-top-bar, .editor-top-bar { 
+        height: 52px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 0 16px; 
+        background: #12161a; 
+        border-bottom: 1px solid var(--border-line); 
+        flex-shrink: 0;
+    }
+    .brand-title { font-family: 'Amiri', serif; font-size: 20px; color: var(--gold); display: flex; align-items: center; gap: 6px; font-weight: bold; }
+    .pro-badge { background: var(--gold); color: #000; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 4px; }
+    .icon-btn-gold { background: var(--bg-card); border: 1px solid var(--border-line); color: var(--gold); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+
+    /* 📺 2. كادر المعاينة سينمائي واسع */
+    .editor-viewport { 
+        flex: 1; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        background: #040506; 
+        position: relative; 
+        overflow: hidden; 
+        min-height: 250px;
+    }
+    #mainCanvas { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+    /* 🎛️ 3. شريط التحكم والتشغيل */
+    .editor-player-bar { 
+        height: 44px; 
+        background: var(--bg-panel); 
+        border-top: 1px solid var(--border-line); 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 0 16px; 
+        flex-shrink: 0;
+    }
+
+    /* 🎞️ 4. منطقة التايم لاين المطور المريح */
+    .timeline-wrapper { 
+        height: 160px; 
+        background: #15191e; 
+        border-top: 1px solid var(--border-line); 
+        position: relative; 
+        display: flex; 
+        flex-direction: column; 
+        flex-shrink: 0;
+    }
+    .playhead-center { 
+        position: absolute; 
+        left: 50%; 
+        top: 0; 
+        bottom: 22px; 
+        width: 2px; 
+        background: #ffffff; 
+        z-index: 50; 
+        transform: translateX(-50%); 
+        pointer-events: none; 
+        box-shadow: 0 0 8px rgba(255,255,255,0.8);
+    }
+    .floating-add-btn { 
+        position: absolute; 
+        left: 14px; 
+        bottom: 30px; 
+        width: 38px; 
+        height: 38px; 
+        border-radius: 12px; 
+        background: var(--pink-accent); 
+        color: #fff; 
+        font-size: 22px; 
+        font-weight: bold; 
+        border: none; 
+        z-index: 60; 
+        cursor: pointer; 
+        box-shadow: 0 4px 12px rgba(231,111,81,0.4);
+    }
+
+    /* 🛠️ 5. الشريط السفلي المطور للأدوات */
+    .bottom-tools-nav { 
+        background: var(--bg-app); 
+        border-top: 1px solid var(--border-line); 
+        position: relative; 
+        flex-shrink: 0;
+    }
+    .tools-horizontal-scroll { 
+        display: flex; 
+        gap: 12px; 
+        overflow-x: auto; 
+        padding: 12px 14px; 
+        scrollbar-width: none; 
+    }
+    .tools-horizontal-scroll::-webkit-scrollbar { display: none; }
+    
+    .tool-item-btn { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        gap: 4px; 
+        background: none; 
+        border: none; 
+        color: var(--text-muted); 
+        font-size: 11px; 
+        font-family: 'Cairo', sans-serif;
+        cursor: pointer; 
+        min-width: 56px; 
+        flex-shrink: 0;
+    }
+    .tool-item-btn .tool-icon, .tool-item-btn span:first-child { 
+        font-size: 22px; 
+        color: #ffffff; 
+    }
+    .tool-item-btn:active { color: var(--gold); }
+
+    /* ⚙️ 6. المودالات والنوافذ المنبثقة */
+    .app-modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 16px; }
+    .app-modal-overlay.active { display: flex; }
+    .export-dialog-box, .drafts-dialog-box, .settings-dialog-box { background: var(--bg-card); border: 1px solid var(--border-line); border-radius: 16px; width: 100%; max-width: 360px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+
+    /* شاشات الموبايل الحقيقية (تأخذ الشاشة بالكامل) */
+    @media (max-width: 600px) {
+        .app-screen {
+            max-width: 100%;
+            max-height: 100%;
+            border: none;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        html, body { width: 100%; height: 100%; overflow: hidden; background: #050607; color: #ffffff; font-family: 'Cairo', sans-serif; }
-        
-        .app-screen { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; top:0; left:0; z-index: 10; background: var(--bg-app); }
-        .app-screen.active { display: flex; z-index: 20; }
+    }
 
-        .home-top-bar, .editor-top-bar { height: 52px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; background: #12161a; border-bottom: 1px solid var(--border-line); }
-        .brand-title { font-family: 'Amiri', serif; font-size: 20px; color: var(--gold); display: flex; align-items: center; gap: 6px; font-weight: bold; }
-        .pro-badge { background: var(--gold); color: #000; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 4px; }
-        .icon-btn-gold { background: var(--bg-card); border: 1px solid var(--border-line); color: var(--gold); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+/* شريط المصغرات السينمائي (InShot Filmstrip Track) */
+.track-clips-container {
+    height: 52px;
+    background: #181d22;
+    border: 1px solid var(--cyan-track);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 250px;
+}
 
-        .home-content { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .start-design-card { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 16px; padding: 16px; text-align: center; }
-        .action-buttons-grid { display: flex; justify-content: space-around; align-items: center; margin-top: 14px; }
-        .action-btn-wrapper { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
-        .circle-action-btn { width: 64px; height: 64px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 26px; color: #fff; }
-        .btn-video { background: linear-gradient(135deg, #ff4081, #d81b60); }
-        .btn-photo { background: linear-gradient(135deg, #ff9100, #f57c00); }
-        .btn-collage { background: linear-gradient(135deg, #ffb300, #f57f17); }
+.track-clip-title-bar {
+    font-size: 10px;
+    font-weight: bold;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 2px 8px;
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    z-index: 10;
+    border-radius: 4px;
+}
 
-        .islamic-ai-banner { background: linear-gradient(135deg, var(--green-islamic), #081c15); border: 1px solid var(--gold); border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; }
-        .banner-try-btn { background: var(--gold); color: #000; border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 11px; cursor: pointer; }
+.filmstrip-holder {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
 
-        .templates-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
-        .template-card { background: var(--bg-card); border: 1px solid var(--border-line); border-radius: 10px; padding: 10px; cursor: pointer; }
-
-        .app-modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 16px; }
-        .app-modal-overlay.active { display: flex; }
-        .export-dialog-box, .drafts-dialog-box, .settings-dialog-box { background: var(--bg-card); border: 1px solid var(--border-line); border-radius: 16px; width: 100%; max-width: 360px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
-    </style>
+.filmstrip-frame {
+    height: 100%;
+    width: 60px;
+    object-fit: cover;
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+    opacity: 0.85;
+}
+/* دعم السحب والدمج الأفقي للمقاطع */
+#trackMainLabel {
+    display: flex !important;
+    align-items: center;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 6px;
+    background: #101418 !important;
+    border: 1px dashed var(--cyan-track) !important;
+}
+       
+</style>
 </head>
 <body>
 
@@ -176,20 +361,69 @@
         </div>
 
         <nav style="background:#0d0f12; border-top:1px solid #262e35; position:relative;">
-            <div style="display:flex; gap:14px; overflow-x:auto; padding:10px 14px;">
-                <button style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('✨ جاري تطبيق الفلتر والذكاء الاصطناعي...')">
-                    <span style="font-size:20px; color:#fff;">✨</span><span>تأثير AI</span>
-                </button>
-                <button style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="promptVerse()">
-                    <span style="font-size:20px; color:#fff;">✍️</span><span>نص / آية</span>
-                </button>
-                <button style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('✂️ تم تقسيم المقطع!')">
-                    <span style="font-size:20px; color:#fff;">✂️</span><span>تقسيم</span>
-                </button>
-                <button style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🗑️ تم الحذف!')">
-                    <span style="font-size:20px; color:#fff;">🗑️</span><span>حذف</span>
-                </button>
-            </div>
+         <div class="tools-horizontal-scroll" style="display:flex; gap:14px; overflow-x:auto; padding:10px 14px;">
+    <!-- أدوات الذكاء الاصطناعي والمساعد الإسلامي -->
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('✨ جاري تطبيق الفلتر والذكاء الاصطناعي...')">
+        <span style="font-size:20px; color:#fff;">✨</span><span>تأثير AI</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="promptVerse()">
+        <span style="font-size:20px; color:#fff;">✍️</span><span>نص / آية</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🌙 ملصقات وأذكار إسلامية')">
+        <span style="font-size:20px; color:#fff;">🌙</span><span>ملصقات</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🕌 المكتبة الإسلامية والمؤثرات')">
+        <span style="font-size:20px; color:#fff;">🕌</span><span>المكتبة</span>
+    </button>
+
+    <!-- أدوات المونتاج الأساسية -->
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('✂️ تم تقسيم المقطع!')">
+        <span style="font-size:20px; color:#fff;">✂️</span><span>تقسيم</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('⚡ التحكم بالسرعة و Speed Curve')">
+        <span style="font-size:20px; color:#fff;">⚡</span><span>السرعة</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🎵 التحكم بالصوت واستخراج الصوت')">
+        <span style="font-size:20px; color:#fff;">🎵</span><span>الصوت</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🎨 الفلاتر السينمائية')">
+        <span style="font-size:20px; color:#fff;">🎨</span><span>فلاتر</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🎛️ تعديل الإضاءة والتباين')">
+        <span style="font-size:20px; color:#fff;">🎛️</span><span>ضبط</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🌟 الانتقالات السينمائية')">
+        <span style="font-size:20px; color:#fff;">🌟</span><span>انتقالات</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🎭 القناع Mask')">
+        <span style="font-size:20px; color:#fff;">🎭</span><span>القناع</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🖼️ إضافة طبقة عائمة PiP')">
+        <span style="font-size:20px; color:#fff;">🖼️</span><span>طبقات PiP</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🟩 إزالة الكروما الخضراء')">
+        <span style="font-size:20px; color:#fff;">🟩</span><span>كروما</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('📱 تغيير الأبعاد (9:16, 16:9)')">
+        <span style="font-size:20px; color:#fff;">📱</span><span>الأبعاد</span>
+    </button>
+
+    <button class="tool-item-btn" style="background:none; border:none; color:#8e9aaf; font-size:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:52px;" onclick="alert('🗑️ تم الحذف!')">
+        <span style="font-size:20px; color:#fff;">🗑️</span><span>حذف</span>
+    </button>
+</div>
         </nav>
     </section>
 
